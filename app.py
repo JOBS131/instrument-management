@@ -15,7 +15,16 @@ from flask_cors import CORS
 
 app = Flask(__name__, static_folder=".")
 app.secret_key = "your-secret-key-change-in-production"
-CORS(app, supports_credentials=True)
+
+# Session configuration for production
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SAMESITE='None',
+    SESSION_COOKIE_HTTPONLY=True,
+    PERMANENT_SESSION_LIFETIME=timedelta(days=7)
+)
+
+CORS(app, supports_credentials=True, origins=["https://instrument-management.onrender.com", "http://localhost:8081"])
 
 # 数据存储路径
 BASE_DIR = Path(__file__).parent
