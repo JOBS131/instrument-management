@@ -433,13 +433,15 @@ def review_application():
 
 
 @app.route("/api/records")
-@require_auth
 def get_records():
-    """获取当前借用记录"""
+    """获取当前借用记录（公开访问，不显示敏感信息）"""
     _, records, _, _, _ = load_data()
     now = datetime.now(timezone.utc)
-    role = session.get("role", "user")
-    user_id = session["user_id"]
+
+    # 检查是否登录
+    is_logged_in = "user_id" in session
+    role = session.get("role", "user") if is_logged_in else "guest"
+    user_id = session.get("user_id") if is_logged_in else None
 
     active_records = []
     for r in records:
@@ -453,8 +455,20 @@ def get_records():
                 end_time = end_time.replace(tzinfo=timezone.utc) - timedelta(hours=8)
 
             if end_time > now:
-                if role == "admin" or r.get("userId") == user_id:
+                # 未登录用户只能看概览，登录用户看自己的，管理员看所有
+                if role == "admin":
                     active_records.append(r)
+                elif is_logged_in and r.get("userId") == user_id:
+                    active_records.append(r)
+                else:
+                    # 未登录用户看到的是简化信息
+                    simplified = {
+                        "id": r["id"],
+                        "userName": r["userName"],
+                        "instrumentNames": r["instrumentNames"],
+                        "registerTime": r["registerTime"],
+                    }
+                    active_records.append(simplified)
         except:
             pass
 
@@ -462,17 +476,30 @@ def get_records():
 
 
 @app.route("/api/history")
-@require_auth
 def get_history():
-    """获取历史记录"""
+    """获取历史记录（公开访问）"""
     _, _, history, _, _ = load_data()
-    role = session.get("role", "user")
-    user_id = session["user_id"]
+
+    # 检查是否登录
+    is_logged_in = "user_id" in session
+    role = session.get("role", "user") if is_logged_in else "guest"
+    user_id = session.get("user_id") if is_logged_in else None
 
     if role == "admin":
         filtered_history = history[-100:]
-    else:
+    elif is_logged_in:
         filtered_history = [h for h in history if h.get("userId") == user_id][-100:]
+    else:
+        # 未登录用户看到简化的历史记录
+        filtered_history = [
+            {
+                "id": h["id"],
+                "userName": h["userName"],
+                "instrumentNames": h["instrumentNames"],
+                "registerTime": h["registerTime"],
+            }
+            for h in history[-50:]
+        ]
 
     return jsonify({"success": True, "data": filtered_history})
 
