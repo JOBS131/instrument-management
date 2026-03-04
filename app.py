@@ -148,6 +148,13 @@ def login():
     if not user:
         return jsonify({"success": False, "error": "用户名或密码错误"})
 
+    # 检查用户状态
+    user_status = user.get("status", "approved")
+    if user_status == "pending":
+        return jsonify({"success": False, "error": "账号正在审批中，请等待管理员审核"})
+    elif user_status == "rejected":
+        return jsonify({"success": False, "error": "账号已被拒绝，请联系管理员"})
+
     session["user_id"] = user["id"]
     session["username"] = user["username"]
     session["role"] = user.get("role", "user")
@@ -215,20 +222,21 @@ def register():
     if any(u["username"] == username for u in users):
         return jsonify({"success": False, "error": "用户名已存在"})
 
-    # 创建新用户（普通用户角色）
+    # 创建新用户（普通用户角色，状态为待审批）
     new_user = {
         "id": int(datetime.now(timezone.utc).timestamp() * 1000),
         "username": username,
         "password_hash": hash_password(password),
         "name": name,
         "role": "user",
+        "status": "pending",  # pending, approved, rejected
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
     users.append(new_user)
     save_json(users, USERS_FILE)
 
-    return jsonify({"success": True, "message": "注册成功，请登录"})
+    return jsonify({"success": True, "message": "注册成功，请等待管理员审批"})
 
 
 # ==================== 仪器管理 API ====================
@@ -589,6 +597,54 @@ def get_all_users():
     _, _, _, users, _ = load_data()
     safe_users = [{k: v for k, v in u.items() if k != "password_hash"} for u in users]
     return jsonify({"success": True, "data": safe_users})
+
+
+@app.route("/api/admin/users/pending", methods=["GET"])
+@require_admin
+def get_pending_users():
+    """获取待审批用户列表（仅管理员）"""
+    _, _, _, users, _ = load_data()
+    pending_users = [u for u in users if u.get("status") == "pending"]
+    safe_users = [
+        {k: v for k, v in u.items() if k != "password_hash"} for u in pending_users
+    ]
+    return jsonify({"success": True, "data": safe_users})
+
+
+@app.route("/api/admin/users/review", methods=["POST"])
+@require_admin
+def review_user():
+    """审批用户注册（仅管理员）"""
+    try:
+        data = request.get_json()
+        user_id = data.get("userId")
+        action = data.get("action")  # 'approve' 或 'reject'
+
+        if not user_id or action not in ["approve", "reject"]:
+            return jsonify({"success": False, "error": "参数错误"})
+
+        _, _, _, users, _ = load_data()
+
+        user = next((u for u in users if u["id"] == user_id), None)
+        if not user:
+            return jsonify({"success": False, "error": "用户不存在"})
+
+        if user.get("status") != "pending":
+            return jsonify({"success": False, "error": "该用户已处理"})
+
+        if action == "approve":
+            user["status"] = "approved"
+            message = "用户已通过审批"
+        else:
+            user["status"] = "rejected"
+            message = "用户已被拒绝"
+
+        save_json(users, USERS_FILE)
+
+        return jsonify({"success": True, "message": message})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
 
 
 if __name__ == "__main__":

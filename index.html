@@ -550,8 +550,15 @@
         <!-- 审批管理页面 -->
         <div id="page-adminApproval" class="main-content">
             <div class="card">
-                <h2>✅ 待审批申请</h2>
+                <h2>✅ 借用申请审批</h2>
                 <div id="pendingApplicationsList">
+                    <div class="empty-state">正在加载...</div>
+                </div>
+            </div>
+            
+            <div class="card" style="margin-top: 20px;">
+                <h2>👤 用户注册审批</h2>
+                <div id="pendingUsersList">
                     <div class="empty-state">正在加载...</div>
                 </div>
             </div>
@@ -1033,6 +1040,7 @@
                 loadMyApplications();
             } else if (page === 'adminApproval') {
                 loadPendingApplications();
+                loadPendingUsers();
             }
         }
 
@@ -1234,6 +1242,119 @@
                 if (result.success) {
                     showMessage('申请已拒绝', 'success');
                     loadPendingApplications();
+                } else {
+                    showMessage('操作失败: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('操作失败，请重试', 'error');
+            }
+        }
+
+        // 加载待审批用户（管理员）
+        async function loadPendingUsers() {
+            const container = document.getElementById('pendingUsersList');
+            container.innerHTML = '<div class="empty-state">正在加载...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/users/pending`, {
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    const pendingUsers = result.data;
+                    if (pendingUsers.length === 0) {
+                        container.innerHTML = '<div class="empty-state">暂无待审批用户</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = '';
+                    pendingUsers.forEach(user => {
+                        const card = createUserCard(user);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = `<div class="empty-state">加载失败: ${result.error}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="empty-state">加载失败，请重试</div>';
+            }
+        }
+
+        // 创建用户卡片
+        function createUserCard(user) {
+            const card = document.createElement('div');
+            card.className = 'approval-card';
+            
+            card.innerHTML = `
+                <div class="header">
+                    <div>
+                        <strong>用户 ${user.username}</strong>
+                        <span class="status-badge status-pending" style="margin-left: 10px;">待审批</span>
+                    </div>
+                    <div style="font-size: 12px; color: #999;">${formatDateTime(user.created_at)}</div>
+                </div>
+                <div class="info">
+                    <div class="info-item">
+                        <label>姓名:</label>
+                        <span>${user.name}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>用户名:</label>
+                        <span>${user.username}</span>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-success" onclick="approveUser(${user.id})">通过</button>
+                    <button class="btn btn-danger" onclick="rejectUser(${user.id})">拒绝</button>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // 通过用户
+        async function approveUser(userId) {
+            if (!confirm('确定要通过该用户的注册申请吗？')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/users/review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ userId: userId, action: 'approve' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('用户已通过审批', 'success');
+                    loadPendingUsers();
+                } else {
+                    showMessage('操作失败: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('操作失败，请重试', 'error');
+            }
+        }
+
+        // 拒绝用户
+        async function rejectUser(userId) {
+            if (!confirm('确定要拒绝该用户的注册申请吗？')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/users/review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ userId: userId, action: 'reject' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('用户已拒绝', 'success');
+                    loadPendingUsers();
                 } else {
                     showMessage('操作失败: ' + result.error, 'error');
                 }
