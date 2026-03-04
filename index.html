@@ -20,16 +20,109 @@
             max-width: 1600px;
             margin: 0 auto;
         }
-        h1 {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-            font-size: 2em;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        
+        /* 顶部导航栏 */
+        .navbar {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        .navbar h1 {
+            color: #333;
+            font-size: 1.5em;
+            margin: 0;
+        }
+        .navbar .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .navbar .user-info {
+            color: #555;
+            font-size: 14px;
+        }
+        .navbar .user-info strong {
+            color: #667eea;
+        }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: opacity 0.3s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+        
+        /* 页面标签 */
+        .page-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .page-tab {
+            padding: 12px 25px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        .page-tab:hover {
+            background: #e0e0e0;
+        }
+        .page-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .page-tab:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            display: none;
+        }
+        .main-content.active {
+            display: block;
+        }
+        
         .grid {
             display: grid;
-            grid-template-columns: 400px 1fr;
+            grid-template-columns: 450px 1fr;
             gap: 20px;
         }
         .card {
@@ -64,21 +157,15 @@
             outline: none;
             border-color: #667eea;
         }
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
+        .btn-full {
             width: 100%;
+            padding: 12px;
+            font-size: 16px;
         }
-        button:hover {
-            opacity: 0.9;
-        }
+        
+        /* 仪器列表 */
         .instrument-list {
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
@@ -92,6 +179,10 @@
             background: #f5f5f5;
             border-radius: 8px;
             cursor: pointer;
+            transition: all 0.2s;
+        }
+        .instrument-item:hover {
+            background: #e8e8e8;
         }
         .instrument-item.selected {
             background: #e3f2fd;
@@ -111,19 +202,8 @@
             width: 50px;
             text-align: center;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        th {
-            background: #f5f5f5;
-            font-weight: bold;
-        }
+        
+        /* 统计 */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -141,6 +221,24 @@
             font-size: 2em;
             font-weight: bold;
         }
+        
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: bold;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
         .status-badge {
             padding: 4px 12px;
             border-radius: 20px;
@@ -156,30 +254,58 @@
         .status-inuse {
             background: #f44336;
         }
-        .btn-return {
+        .status-pending {
+            background: #ff9800;
+        }
+        .status-approved {
             background: #4caf50;
-            color: white;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 6px;
-            cursor: pointer;
         }
-        .tabs {
+        .status-rejected {
+            background: #f44336;
+        }
+        
+        /* 模态框 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
         }
-        .tab {
-            padding: 10px 20px;
-            background: #f5f5f5;
-            border: none;
-            border-radius: 8px;
+        .modal {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+        .modal-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .modal-footer a {
+            color: #667eea;
             cursor: pointer;
+            text-decoration: underline;
         }
-        .tab.active {
-            background: #667eea;
-            color: white;
-        }
+        
+        /* 消息提示 */
         .message {
             padding: 15px;
             border-radius: 8px;
@@ -198,96 +324,201 @@
             border: 1px solid #f44336;
             display: block;
         }
+        .message.info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #2196f3;
+            display: block;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        /* 审批卡片 */
+        .approval-card {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .approval-card .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .approval-card .info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .approval-card .info-item {
+            display: flex;
+        }
+        .approval-card .info-item label {
+            color: #666;
+            margin-right: 5px;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+        .approval-card .info-item span {
+            color: #333;
+            font-weight: bold;
+        }
+        .approval-card .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* 拒绝原因输入 */
+        .reject-reason {
+            margin-top: 10px;
+            display: none;
+        }
+        .reject-reason.active {
+            display: block;
+        }
+        
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏢 澳大河套集成电路研究院<br>🔬 测试间仪器设备管理系统</h1>
-        
-        <div id="message" class="message"></div>
-        
-        <div class="grid">
-            <div class="card">
-                <h2>📝 仪器使用登记</h2>
-                
-                <form id="registrationForm">
-                    <div class="form-group">
-                        <label>姓名 *</label>
-                        <input type="text" id="userName" required placeholder="请输入您的姓名">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>选择仪器 *</label>
-                        <div class="instrument-list" id="instrumentList">
-                            <div style="text-align:center;padding:20px;color:#999;">正在加载...</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>预计使用时间</label>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div>
-                                <label style="font-weight: normal; font-size: 12px;">开始时间</label>
-                                <input type="datetime-local" id="startTime" required>
-                            </div>
-                            <div>
-                                <label style="font-weight: normal; font-size: 12px;">结束时间</label>
-                                <input type="datetime-local" id="endTime" required>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>备注</label>
-                        <textarea id="notes" rows="2" placeholder="其他需要说明的事项（可选）"></textarea>
-                    </div>
-                    
-                    <button type="submit">提交申请</button>
-                </form>
+        <!-- 顶部导航栏 -->
+        <div class="navbar">
+            <h1>🏢 澳大河套集成电路研究院 - 测试间仪器设备管理系统</h1>
+            <div class="user-section">
+                <div id="userInfo" class="user-info" style="display: none;">
+                    欢迎, <strong id="currentUserName"></strong> <span id="currentUserRole"></span>
+                </div>
+                <button id="loginBtn" class="btn btn-primary" onclick="showLoginModal()">登录</button>
+                <button id="logoutBtn" class="btn btn-secondary" onclick="logout()" style="display: none;">退出</button>
             </div>
-            
-            <div>
-                <div class="card" style="margin-bottom: 20px;">
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div class="stat-number" id="totalCount">0</div>
-                            <div>仪器总数</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-number" id="availableCount">0</div>
-                            <div>可用数量</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="stat-number" id="inUseCount">0</div>
-                            <div>使用中</div>
-                        </div>
-                    </div>
+        </div>
+
+        <!-- 消息提示 -->
+        <div id="message" class="message"></div>
+
+        <!-- 页面标签 -->
+        <div class="page-tabs">
+            <button class="page-tab active" onclick="switchPage('home')">🏠 首页</button>
+            <button class="page-tab" onclick="switchPage('myApplications')" id="myAppTab" style="display: none;">📋 我的申请</button>
+            <button class="page-tab" onclick="switchPage('adminApproval')" id="adminTab" style="display: none;">✅ 审批管理</button>
+        </div>
+
+        <!-- 首页 -->
+        <div id="page-home" class="main-content active">
+            <div class="grid">
+                <!-- 左侧：申请表单 -->
+                <div class="card">
+                    <h2>📝 仪器使用登记</h2>
                     
-                    <h3 style="margin-bottom: 15px;">📊 仪器状态总览</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>仪器名称</th>
-                                <th>型号</th>
-                                <th>位置</th>
-                                <th>可用/总数</th>
-                                <th>状态</th>
-                                <th>当前使用者</th>
-                            </tr>
-                        </thead>
-                        <tbody id="instrumentTable">
-                            <tr><td colspan="6" style="text-align:center;padding:20px;">正在加载...</td></tr>
-                        </tbody>
-                    </table>
+                    <div id="loginRequired" class="empty-state">
+                        <p>请先登录后再申请使用仪器</p>
+                        <button class="btn btn-primary" onclick="showLoginModal()" style="margin-top: 15px;">立即登录</button>
+                    </div>
+
+                    <form id="registrationForm" style="display: none;">
+                        <div class="form-group">
+                            <label>申请人姓名 *</label>
+                            <input type="text" id="userName" required readonly>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>所属部门 *</label>
+                            <input type="text" id="userDept" required placeholder="请输入所属部门">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>联系方式 *</label>
+                            <input type="text" id="userContact" required placeholder="手机号或邮箱">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>选择仪器 *</label>
+                            <div class="instrument-list" id="instrumentList">
+                                <div style="text-align:center;padding:20px;color:#999;">正在加载...</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>使用时间</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div>
+                                    <label style="font-weight: normal; font-size: 12px;">开始时间</label>
+                                    <input type="datetime-local" id="startTime" required>
+                                </div>
+                                <div>
+                                    <label style="font-weight: normal; font-size: 12px;">结束时间</label>
+                                    <input type="datetime-local" id="endTime" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>使用用途 *</label>
+                            <textarea id="purpose" rows="2" required placeholder="请详细说明使用目的"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>备注</label>
+                            <textarea id="notes" rows="2" placeholder="其他需要说明的事项（可选）"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-full">提交申请</button>
+                    </form>
                 </div>
                 
-                <div class="card">
-                    <div class="tabs">
-                        <button class="tab active" onclick="switchTab('current')">📋 当前使用</button>
-                        <button class="tab" onclick="switchTab('history')">📚 历史记录</button>
+                <!-- 右侧：统计和列表 -->
+                <div>
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-number" id="totalCount">0</div>
+                                <div>仪器总数</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="availableCount">0</div>
+                                <div>可用数量</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="inUseCount">0</div>
+                                <div>使用中</div>
+                            </div>
+                        </div>
+                        
+                        <h3 style="margin-bottom: 15px;">📊 仪器状态总览</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>仪器名称</th>
+                                    <th>型号</th>
+                                    <th>位置</th>
+                                    <th>可用/总数</th>
+                                    <th>状态</th>
+                                    <th>当前使用者</th>
+                                </tr>
+                            </thead>
+                            <tbody id="instrumentTable">
+                                <tr><td colspan="6" style="text-align:center;padding:20px;">正在加载...</td></tr>
+                            </tbody>
+                        </table>
                     </div>
                     
-                    <div id="currentTab">
+                    <div class="card">
+                        <h3 style="margin-bottom: 15px;">📋 当前使用记录</h3>
                         <table>
                             <thead>
                                 <tr>
@@ -302,22 +533,56 @@
                             </tbody>
                         </table>
                     </div>
-                    
-                    <div id="historyTab" style="display: none;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>登记时间</th>
-                                    <th>姓名</th>
-                                    <th>使用仪器</th>
-                                </tr>
-                            </thead>
-                            <tbody id="historyTable">
-                                <tr><td colspan="3" style="text-align:center;padding:20px;">正在加载...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 我的申请页面 -->
+        <div id="page-myApplications" class="main-content">
+            <div class="card">
+                <h2>📋 我的申请记录</h2>
+                <div id="myApplicationsList">
+                    <div class="empty-state">正在加载...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 审批管理页面 -->
+        <div id="page-adminApproval" class="main-content">
+            <div class="card">
+                <h2>✅ 待审批申请</h2>
+                <div id="pendingApplicationsList">
+                    <div class="empty-state">正在加载...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录/注册模态框 -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal">
+            <h2 id="authTitle">用户登录</h2>
+            <form id="authForm">
+                <div class="form-group">
+                    <label>用户名</label>
+                    <input type="text" id="authUsername" required placeholder="请输入用户名">
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <input type="password" id="authPassword" required placeholder="请输入密码">
+                </div>
+                <div class="form-group" id="nameField" style="display: none;">
+                    <label>姓名</label>
+                    <input type="text" id="authName" placeholder="请输入真实姓名">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" id="authSubmitBtn">登录</button>
+            </form>
+            <div class="modal-footer">
+                <span id="authSwitchText">还没有账号？</span>
+                <a onclick="toggleAuthMode()" id="authSwitchLink">立即注册</a>
+            </div>
+            <div style="margin-top: 15px; text-align: center;">
+                <button class="btn btn-secondary" onclick="closeAuthModal()" style="width: 100%;">取消</button>
             </div>
         </div>
     </div>
@@ -326,9 +591,12 @@
         const API_BASE = window.location.origin;
         let instruments = [];
         let records = [];
-        let historyRecords = [];
-        
+        let currentUser = null;
+        let isLoginMode = true;
+
+        // 初始化
         window.addEventListener('load', function() {
+            checkLoginStatus();
             loadData();
             
             // 设置默认时间
@@ -339,19 +607,187 @@
             const later = new Date(now.getTime() + 2 * 60 * 60 * 1000);
             document.getElementById('endTime').value = later.toISOString().slice(0, 16);
         });
-        
+
+        // 检查登录状态
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/auth/me`, {
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentUser = result.data;
+                    updateUIForLoggedInUser();
+                } else {
+                    updateUIForGuest();
+                }
+            } catch (error) {
+                updateUIForGuest();
+            }
+        }
+
+        // 更新已登录用户UI
+        function updateUIForLoggedInUser() {
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('currentUserName').textContent = currentUser.name;
+            document.getElementById('currentUserRole').textContent = currentUser.role === 'admin' ? '(管理员)' : '';
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'block';
+            
+            // 显示申请表单
+            document.getElementById('loginRequired').style.display = 'none';
+            document.getElementById('registrationForm').style.display = 'block';
+            document.getElementById('userName').value = currentUser.name;
+            
+            // 显示我的申请标签
+            document.getElementById('myAppTab').style.display = 'block';
+            
+            // 管理员显示审批标签
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminTab').style.display = 'block';
+            }
+        }
+
+        // 更新游客UI
+        function updateUIForGuest() {
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('loginBtn').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'none';
+            
+            // 隐藏申请表单
+            document.getElementById('loginRequired').style.display = 'block';
+            document.getElementById('registrationForm').style.display = 'none';
+            
+            // 隐藏我的申请和审批标签
+            document.getElementById('myAppTab').style.display = 'none';
+            document.getElementById('adminTab').style.display = 'none';
+        }
+
+        // 显示登录模态框
+        function showLoginModal() {
+            document.getElementById('authModal').classList.add('active');
+            isLoginMode = true;
+            updateAuthModalUI();
+        }
+
+        // 关闭登录模态框
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+            // 重置表单
+            document.getElementById('authForm').reset();
+        }
+
+        // 切换登录/注册模式
+        function toggleAuthMode() {
+            isLoginMode = !isLoginMode;
+            updateAuthModalUI();
+        }
+
+        // 更新认证模态框UI
+        function updateAuthModalUI() {
+            const title = document.getElementById('authTitle');
+            const nameField = document.getElementById('nameField');
+            const submitBtn = document.getElementById('authSubmitBtn');
+            const switchText = document.getElementById('authSwitchText');
+            const switchLink = document.getElementById('authSwitchLink');
+            
+            if (isLoginMode) {
+                title.textContent = '用户登录';
+                nameField.style.display = 'none';
+                document.getElementById('authName').required = false;
+                submitBtn.textContent = '登录';
+                switchText.textContent = '还没有账号？';
+                switchLink.textContent = '立即注册';
+            } else {
+                title.textContent = '用户注册';
+                nameField.style.display = 'block';
+                document.getElementById('authName').required = true;
+                submitBtn.textContent = '注册';
+                switchText.textContent = '已有账号？';
+                switchLink.textContent = '立即登录';
+            }
+        }
+
+        // 登录/注册表单提交
+        document.getElementById('authForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            
+            try {
+                let response;
+                if (isLoginMode) {
+                    // 登录
+                    response = await fetch(`${API_BASE}/api/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ username, password })
+                    });
+                } else {
+                    // 注册
+                    const name = document.getElementById('authName').value.trim();
+                    if (!name) {
+                        showMessage('请输入姓名', 'error');
+                        return;
+                    }
+                    response = await fetch(`${API_BASE}/api/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password, name })
+                    });
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage(isLoginMode ? '登录成功！' : '注册成功，请登录', 'success');
+                    closeAuthModal();
+                    if (isLoginMode) {
+                        currentUser = result.data;
+                        updateUIForLoggedInUser();
+                    } else {
+                        // 注册成功后切换到登录模式
+                        isLoginMode = true;
+                        updateAuthModalUI();
+                        showLoginModal();
+                    }
+                } else {
+                    showMessage(result.error || '操作失败', 'error');
+                }
+            } catch (error) {
+                showMessage('网络错误，请重试', 'error');
+            }
+        });
+
+        // 退出登录
+        async function logout() {
+            try {
+                await fetch(`${API_BASE}/api/auth/logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+                currentUser = null;
+                updateUIForGuest();
+                showMessage('已退出登录', 'info');
+            } catch (error) {
+                showMessage('退出失败', 'error');
+            }
+        }
+
+        // 加载数据
         async function loadData() {
             try {
-                const [instResponse, recResponse, histResponse, statsResponse] = await Promise.all([
+                const [instResponse, recResponse, statsResponse] = await Promise.all([
                     fetch(`${API_BASE}/api/instruments`),
                     fetch(`${API_BASE}/api/records`),
-                    fetch(`${API_BASE}/api/history`),
                     fetch(`${API_BASE}/api/stats`)
                 ]);
                 
                 const instData = await instResponse.json();
                 const recData = await recResponse.json();
-                const histData = await histResponse.json();
                 const statsData = await statsResponse.json();
                 
                 if (instData.success) {
@@ -365,11 +801,6 @@
                     updateRecordsTable();
                 }
                 
-                if (histData.success) {
-                    historyRecords = histData.data;
-                    updateHistoryTable();
-                }
-                
                 if (statsData.success) {
                     document.getElementById('totalCount').textContent = statsData.data.total;
                     document.getElementById('availableCount').textContent = statsData.data.available;
@@ -379,7 +810,8 @@
                 showMessage('加载数据失败', 'error');
             }
         }
-        
+
+        // 更新仪器选择列表
         function updateInstrumentList() {
             const container = document.getElementById('instrumentList');
             container.innerHTML = '';
@@ -414,7 +846,7 @@
                 container.appendChild(div);
             });
         }
-        
+
         function toggleInstrument(checkbox) {
             const item = checkbox.closest('.instrument-item');
             if (checkbox.checked) {
@@ -423,7 +855,8 @@
                 item.classList.remove('selected');
             }
         }
-        
+
+        // 更新仪器表格
         function updateInstrumentTable() {
             const tbody = document.getElementById('instrumentTable');
             tbody.innerHTML = '';
@@ -444,7 +877,7 @@
                 }
                 
                 const currentUsers = inst.currentUsers && inst.currentUsers.length > 0 
-                    ? inst.currentUsers.join(', ') 
+                    ? [...new Set(inst.currentUsers)].join(', ') 
                     : '-';
                 
                 row.innerHTML = `
@@ -458,7 +891,8 @@
                 tbody.appendChild(row);
             });
         }
-        
+
+        // 更新记录表格
         function updateRecordsTable() {
             const tbody = document.getElementById('recordsTable');
             tbody.innerHTML = '';
@@ -470,99 +904,29 @@
             
             records.slice().reverse().forEach(record => {
                 const row = document.createElement('tr');
+                const canReturn = currentUser && (currentUser.role === 'admin' || record.userId === currentUser.id);
                 row.innerHTML = `
                     <td>${formatDateTime(record.registerTime)}</td>
                     <td>${record.userName}</td>
                     <td>${record.instrumentNames}</td>
-                    <td><button class="btn-return" onclick="returnInstrument(${record.id})">归还</button></td>
+                    <td>${canReturn ? `<button class="btn btn-success" onclick="returnInstrument(${record.id})" style="padding: 6px 16px; font-size: 12px;">归还</button>` : '-'}</td>
                 `;
                 tbody.appendChild(row);
             });
         }
-        
-        function updateHistoryTable() {
-            const tbody = document.getElementById('historyTable');
-            tbody.innerHTML = '';
-            
-            if (historyRecords.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999; padding: 20px;">暂无历史记录</td></tr>';
-                return;
-            }
-            
-            historyRecords.slice().reverse().slice(0, 50).forEach(record => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${formatDateTime(record.registerTime)}</td>
-                    <td>${record.userName}</td>
-                    <td>${record.instrumentNames}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-        
-        function formatDateTime(dateStr) {
-            if (!dateStr) return '-';
-            const date = new Date(dateStr);
-            return date.toLocaleString('zh-CN', {
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-        
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            
-            if (tab === 'current') {
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.getElementById('currentTab').style.display = 'block';
-                document.getElementById('historyTab').style.display = 'none';
-            } else {
-                document.querySelectorAll('.tab')[1].classList.add('active');
-                document.getElementById('currentTab').style.display = 'none';
-                document.getElementById('historyTab').style.display = 'block';
-            }
-        }
-        
-        function showMessage(text, type) {
-            const msgDiv = document.getElementById('message');
-            msgDiv.textContent = text;
-            msgDiv.className = 'message ' + type;
-            setTimeout(() => {
-                msgDiv.className = 'message';
-            }, 5000);
-        }
-        
-        async function returnInstrument(recordId) {
-            if (!confirm('确定要归还这些仪器吗？')) return;
-            
-            try {
-                const response = await fetch(`${API_BASE}/api/return`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ recordId: recordId })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showMessage('仪器归还成功！', 'success');
-                    loadData();
-                } else {
-                    showMessage('归还失败: ' + result.error, 'error');
-                }
-            } catch (error) {
-                showMessage('归还失败，请检查网络连接', 'error');
-            }
-        }
-        
+
+        // 提交申请表单
         document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            if (!currentUser) {
+                showMessage('请先登录', 'error');
+                return;
+            }
+            
             const selectedInstruments = [];
             const instrumentQuantities = {};
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            const checkboxes = document.querySelectorAll('#instrumentList input[type="checkbox"]:checked');
             
             if (checkboxes.length === 0) {
                 showMessage('请至少选择一台仪器！', 'error');
@@ -581,23 +945,26 @@
             const instrumentNames = selectedInstruments.map(id => {
                 const inst = instruments.find(i => i.id === id);
                 const qty = instrumentQuantities[id];
-                return inst ? `${inst.name}(${inst.model}) x${qty}台` : '';
+                return inst ? `${inst.name}(${inst.model}) x${qty}` : '';
             }).join(', ');
             
             const recordData = {
-                userName: document.getElementById('userName').value,
+                userDept: document.getElementById('userDept').value.trim(),
+                userContact: document.getElementById('userContact').value.trim(),
                 instrumentIds: selectedInstruments,
                 instrumentNames: instrumentNames,
                 instrumentQuantities: instrumentQuantities,
                 startTime: new Date(document.getElementById('startTime').value).toISOString(),
                 endTime: new Date(document.getElementById('endTime').value).toISOString(),
-                notes: document.getElementById('notes').value
+                purpose: document.getElementById('purpose').value.trim(),
+                notes: document.getElementById('notes').value.trim()
             };
             
             try {
                 const response = await fetch(`${API_BASE}/api/borrow/apply`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
                     body: JSON.stringify(recordData)
                 });
                 
@@ -606,15 +973,302 @@
                 if (result.success) {
                     showMessage('申请已提交，等待管理员审批', 'success');
                     this.reset();
+                    document.getElementById('userName').value = currentUser.name;
                     document.querySelectorAll('.instrument-item').forEach(item => {
                         item.classList.remove('selected');
                     });
-                    loadData();
+                    // 重置默认时间
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    document.getElementById('startTime').value = now.toISOString().slice(0, 16);
+                    const later = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+                    document.getElementById('endTime').value = later.toISOString().slice(0, 16);
                 } else {
                     showMessage('申请失败: ' + result.error, 'error');
                 }
             } catch (error) {
                 showMessage('提交失败，请检查网络连接', 'error');
+            }
+        });
+
+        // 归还仪器
+        async function returnInstrument(recordId) {
+            if (!confirm('确定要归还这些仪器吗？')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/return`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ recordId: recordId })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('仪器归还成功！', 'success');
+                    loadData();
+                } else {
+                    showMessage('归还失败: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('归还失败，请检查网络连接', 'error');
+            }
+        }
+
+        // 切换页面
+        function switchPage(page) {
+            // 更新标签状态
+            document.querySelectorAll('.page-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // 隐藏所有页面
+            document.querySelectorAll('.main-content').forEach(content => content.classList.remove('active'));
+            
+            // 显示目标页面
+            document.getElementById(`page-${page}`).classList.add('active');
+            
+            // 加载对应数据
+            if (page === 'myApplications') {
+                loadMyApplications();
+            } else if (page === 'adminApproval') {
+                loadPendingApplications();
+            }
+        }
+
+        // 加载我的申请
+        async function loadMyApplications() {
+            const container = document.getElementById('myApplicationsList');
+            container.innerHTML = '<div class="empty-state">正在加载...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/borrow/pending`, {
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.data.length === 0) {
+                        container.innerHTML = '<div class="empty-state">暂无申请记录</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = '';
+                    result.data.slice().reverse().forEach(app => {
+                        const card = createApplicationCard(app, false);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = `<div class="empty-state">加载失败: ${result.error}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="empty-state">加载失败，请重试</div>';
+            }
+        }
+
+        // 加载待审批申请（管理员）
+        async function loadPendingApplications() {
+            const container = document.getElementById('pendingApplicationsList');
+            container.innerHTML = '<div class="empty-state">正在加载...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/borrow/pending`, {
+                    credentials: 'include'
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    const pendingApps = result.data.filter(app => app.status === 'pending');
+                    if (pendingApps.length === 0) {
+                        container.innerHTML = '<div class="empty-state">暂无待审批申请</div>';
+                        return;
+                    }
+                    
+                    container.innerHTML = '';
+                    pendingApps.forEach(app => {
+                        const card = createApplicationCard(app, true);
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = `<div class="empty-state">加载失败: ${result.error}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = '<div class="empty-state">加载失败，请重试</div>';
+            }
+        }
+
+        // 创建申请卡片
+        function createApplicationCard(app, isAdmin) {
+            const card = document.createElement('div');
+            card.className = 'approval-card';
+            
+            let statusClass = 'status-pending';
+            let statusText = '待审批';
+            if (app.status === 'approved') {
+                statusClass = 'status-approved';
+                statusText = '已通过';
+            } else if (app.status === 'rejected') {
+                statusClass = 'status-rejected';
+                statusText = '已拒绝';
+            }
+            
+            card.innerHTML = `
+                <div class="header">
+                    <div>
+                        <strong>申请 #${app.id}</strong>
+                        <span class="status-badge ${statusClass}" style="margin-left: 10px;">${statusText}</span>
+                    </div>
+                    <div style="font-size: 12px; color: #999;">${formatDateTime(app.applyTime)}</div>
+                </div>
+                <div class="info">
+                    <div class="info-item">
+                        <label>申请人:</label>
+                        <span>${app.userName}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>部门:</label>
+                        <span>${app.userDept || '-'}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>联系方式:</label>
+                        <span>${app.userContact || '-'}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>仪器:</label>
+                        <span>${app.instrumentNames}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>开始时间:</label>
+                        <span>${formatDateTime(app.startTime)}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>结束时间:</label>
+                        <span>${formatDateTime(app.endTime)}</span>
+                    </div>
+                    <div class="info-item" style="grid-column: span 2;">
+                        <label>用途:</label>
+                        <span>${app.purpose || '-'}</span>
+                    </div>
+                </div>
+                ${isAdmin && app.status === 'pending' ? `
+                    <div class="actions">
+                        <button class="btn btn-success" onclick="approveApplication(${app.id})">通过</button>
+                        <button class="btn btn-danger" onclick="showRejectReason(${app.id})">拒绝</button>
+                    </div>
+                    <div id="reject-${app.id}" class="reject-reason">
+                        <textarea id="rejectReason-${app.id}" placeholder="请输入拒绝原因" style="margin-top: 10px;"></textarea>
+                        <div style="margin-top: 10px; display: flex; gap: 10px;">
+                            <button class="btn btn-danger" onclick="rejectApplication(${app.id})">确认拒绝</button>
+                            <button class="btn btn-secondary" onclick="hideRejectReason(${app.id})">取消</button>
+                        </div>
+                    </div>
+                ` : ''}
+                ${app.status === 'rejected' ? `
+                    <div style="margin-top: 10px; padding: 10px; background: #ffebee; border-radius: 5px; font-size: 14px;">
+                        <strong>拒绝原因:</strong> ${app.rejectReason || '无'}
+                    </div>
+                ` : ''}
+                ${app.status === 'approved' ? `
+                    <div style="margin-top: 10px; padding: 10px; background: #e8f5e9; border-radius: 5px; font-size: 14px;">
+                        <strong>审批人:</strong> ${app.reviewerName || '管理员'} | <strong>审批时间:</strong> ${formatDateTime(app.reviewTime)}
+                    </div>
+                ` : ''}
+            `;
+            
+            return card;
+        }
+
+        // 显示拒绝原因输入
+        function showRejectReason(appId) {
+            document.getElementById(`reject-${appId}`).classList.add('active');
+        }
+
+        // 隐藏拒绝原因输入
+        function hideRejectReason(appId) {
+            document.getElementById(`reject-${appId}`).classList.remove('active');
+            document.getElementById(`rejectReason-${appId}`).value = '';
+        }
+
+        // 通过申请
+        async function approveApplication(appId) {
+            try {
+                const response = await fetch(`${API_BASE}/api/borrow/review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ applicationId: appId, action: 'approve' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('申请已通过', 'success');
+                    loadPendingApplications();
+                    loadData();
+                } else {
+                    showMessage('操作失败: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('操作失败，请重试', 'error');
+            }
+        }
+
+        // 拒绝申请
+        async function rejectApplication(appId) {
+            const reason = document.getElementById(`rejectReason-${appId}`).value.trim();
+            if (!reason) {
+                showMessage('请输入拒绝原因', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/borrow/review`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ applicationId: appId, action: 'reject', reason: reason })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('申请已拒绝', 'success');
+                    loadPendingApplications();
+                } else {
+                    showMessage('操作失败: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('操作失败，请重试', 'error');
+            }
+        }
+
+        // 格式化日期时间
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // 显示消息
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById('message');
+            msgDiv.textContent = text;
+            msgDiv.className = 'message ' + type;
+            setTimeout(() => {
+                msgDiv.className = 'message';
+            }, 5000);
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAuthModal();
             }
         });
     </script>

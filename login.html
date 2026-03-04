@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仪器管理系统 - 登录</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 1.5em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+            display: block;
+        }
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #f44336;
+            display: block;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+        .tab.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            margin-bottom: -2px;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .hint {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🔬 仪器管理系统</h1>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('login')">登录</button>
+            <button class="tab" onclick="switchTab('register')">注册</button>
+        </div>
+        
+        <div id="loginTab" class="tab-content active">
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="loginUsername" placeholder="请输入用户名" value="admin">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="loginPassword" placeholder="请输入密码" value="admin123">
+            </div>
+            <button onclick="doLogin()">登录</button>
+        </div>
+        
+        <div id="registerTab" class="tab-content">
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="regUsername" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label>姓名</label>
+                <input type="text" id="regName" placeholder="请输入真实姓名">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="regPassword" placeholder="请输入密码">
+            </div>
+            <button onclick="doRegister()">注册</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            setTimeout(() => {
+                msg.className = 'message';
+            }, 5000);
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'login') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('loginTab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('registerTab').classList.add('active');
+            }
+        }
+        
+        async function doLogin() {
+            console.log('登录按钮被点击');
+            
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            console.log('用户名:', username, '密码长度:', password.length);
+            
+            if (!username || !password) {
+                showMessage('请输入用户名和密码', 'error');
+                return;
+            }
+            
+            showMessage('正在登录...', 'success');
+            
+            try {
+                const response = await fetch(API_BASE + '/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                });
+                
+                console.log('响应状态:', response.status);
+                
+                const data = await response.json();
+                console.log('响应数据:', data);
+                
+                if (data.success) {
+                    showMessage('登录成功！正在跳转...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/index_new.html';
+                    }, 1000);
+                } else {
+                    showMessage(data.error || '登录失败', 'error');
+                }
+            } catch (error) {
+                console.error('登录错误:', error);
+                showMessage('登录失败: ' + error.message, 'error');
+            }
+        }
+        
+        async function doRegister() {
+            console.log('注册按钮被点击');
+            
+            const username = document.getElementById('regUsername').value.trim();
+            const name = document.getElementById('regName').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            
+            if (!username || !name || !password) {
+                showMessage('请填写完整信息', 'error');
+                return;
+            }
+            
+            showMessage('正在注册...', 'success');
+            
+            try {
+                const response = await fetch(API_BASE + '/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password, name })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('注册成功，请登录', 'success');
+                    switchTab('login');
+                    document.getElementById('regUsername').value = '';
+                    document.getElementById('regName').value = '';
+                    document.getElementById('regPassword').value = '';
+                } else {
+                    showMessage(data.error || '注册失败', 'error');
+                }
+            } catch (error) {
+                console.error('注册错误:', error);
+                showMessage('注册失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 页面加载完成后的检查
+        console.log('登录页面已加载');
+        console.log('API_BASE:', API_BASE);
+    </script>
+</body>
+</html>
