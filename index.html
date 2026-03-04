@@ -217,16 +217,6 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>部门/项目组 *</label>
-                        <input type="text" id="userDept" required placeholder="请输入部门或项目组">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>联系方式 *</label>
-                        <input type="text" id="userContact" required placeholder="手机号或邮箱">
-                    </div>
-                    
-                    <div class="form-group">
                         <label>选择仪器 *</label>
                         <div class="instrument-list" id="instrumentList">
                             <div style="text-align:center;padding:20px;color:#999;">正在加载...</div>
@@ -248,13 +238,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>使用目的 *</label>
-                        <textarea id="purpose" rows="3" required placeholder="请描述使用仪器的目的"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
                         <label>备注</label>
-                        <textarea id="notes" rows="2" placeholder="其他需要说明的事项"></textarea>
+                        <textarea id="notes" rows="2" placeholder="其他需要说明的事项（可选）"></textarea>
                     </div>
                     
                     <button type="submit">提交申请</button>
@@ -601,14 +586,11 @@
             
             const recordData = {
                 userName: document.getElementById('userName').value,
-                userDept: document.getElementById('userDept').value,
-                userContact: document.getElementById('userContact').value,
                 instrumentIds: selectedInstruments,
                 instrumentNames: instrumentNames,
                 instrumentQuantities: instrumentQuantities,
                 startTime: new Date(document.getElementById('startTime').value).toISOString(),
                 endTime: new Date(document.getElementById('endTime').value).toISOString(),
-                purpose: document.getElementById('purpose').value,
                 notes: document.getElementById('notes').value
             };
             
