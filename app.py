@@ -10,10 +10,11 @@ import hashlib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from functools import wraps
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder=".")
+app.secret_key = "instrument-management-system-secret-key-2024"
 
 # CORS配置 - 允许所有来源
 CORS(
@@ -82,15 +83,14 @@ def hash_password(password):
 
 
 def get_current_user():
-    """从请求头获取当前用户"""
-    user_id = request.headers.get("X-User-ID")
-    user_role = request.headers.get("X-User-Role", "guest")
+    """从session获取当前用户"""
+    user_id = session.get("user_id")
 
     if not user_id:
         return None
 
     _, _, _, users, _ = load_data()
-    user = next((u for u in users if str(u["id"]) == str(user_id)), None)
+    user = next((u for u in users if u["id"] == user_id), None)
 
     if user:
         return {
@@ -141,8 +141,39 @@ def require_admin(f):
 
 @app.route("/")
 def index():
-    """主页"""
-    return send_from_directory(".", "index.html")
+    """主页 - 重定向到登录页"""
+    return send_from_directory(".", "login.html")
+
+
+@app.route("/login.html")
+def login_page():
+    """登录页面"""
+    return send_from_directory(".", "login.html")
+
+
+@app.route("/index_new.html")
+def main_page():
+    """仪器管理主页面 - 需要登录"""
+    user = get_current_user()
+    if not user:
+        # 未登录，返回需要登录的提示或重定向脚本
+        return (
+            """<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>需要登录</title>
+    <script>
+        window.location.href = '/login.html';
+    </script>
+</head>
+<body>
+    <p>请先登录，正在跳转到登录页面...</p>
+</body>
+</html>""",
+            401,
+        )
+    return send_from_directory(".", "index_new.html")
 
 
 # ==================== 用户认证 API ====================
@@ -179,6 +210,11 @@ def login():
     if user.get("status") == "rejected":
         return jsonify({"success": False, "error": "账号已被拒绝，请联系管理员"})
 
+    # 设置session
+    session["user_id"] = user["id"]
+    session["username"] = user["username"]
+    session["role"] = user.get("role", "user")
+
     return jsonify(
         {
             "success": True,
@@ -194,7 +230,8 @@ def login():
 
 @app.route("/api/auth/logout", methods=["POST"])
 def logout():
-    """用户登出（前端清除localStorage即可）"""
+    """用户登出"""
+    session.clear()
     return jsonify({"success": True})
 
 
@@ -547,10 +584,11 @@ def get_history():
 @app.route("/api/return", methods=["POST"])
 @require_auth
 def return_instruments():
-    """归还仪器"""
+    """归还仪器 - 支持单独归还某个仪器"""
     try:
         data = request.get_json()
         record_id = data.get("recordId")
+        instrument_id = data.get("instrumentId")  # 可选，如果指定则只归还该仪器
 
         user = get_current_user()
         if not user:
@@ -572,9 +610,18 @@ def return_instruments():
         if role != "admin" and record.get("userId") != user_id:
             return jsonify({"success": False, "error": "只能归还自己借用的设备"})
 
-        # 归还仪器
+        # 确定要归还的仪器列表
         quantities = record.get("instrumentQuantities", {})
-        for inst_id in record["instrumentIds"]:
+        message = "归还成功"  # 默认消息
+        if instrument_id:
+            # 只归还指定仪器
+            inst_ids_to_return = [int(instrument_id)]
+        else:
+            # 归还所有仪器
+            inst_ids_to_return = record["instrumentIds"]
+
+        # 归还仪器
+        for inst_id in inst_ids_to_return:
             inst = next((i for i in instruments if i["id"] == inst_id), None)
             if inst:
                 return_qty = quantities.get(str(inst_id), 1)
@@ -593,14 +640,38 @@ def return_instruments():
                         if record["userName"] in inst["currentUsers"]:
                             inst["currentUsers"].remove(record["userName"])
 
-        record["endTime"] = datetime.now(timezone.utc).isoformat()
-        record["returnedBy"] = user.get("username", "未知")
-        record["returnTime"] = datetime.now(timezone.utc).isoformat()
+        if instrument_id:
+            # 部分归还：从记录中移除该仪器
+            inst_id_int = int(instrument_id)
+            if inst_id_int in record["instrumentIds"]:
+                record["instrumentIds"].remove(inst_id_int)
+                if str(inst_id_int) in record.get("instrumentQuantities", {}):
+                    del record["instrumentQuantities"][str(inst_id_int)]
+                # 更新仪器名称列表
+                record["instrumentNames"] = ", ".join(
+                    [
+                        f"{next((i['name'] for i in instruments if i['id'] == iid), '未知')}({next((i['model'] for i in instruments if i['id'] == iid), '-')}) x{quantities.get(str(iid), 1)}台"
+                        for iid in record["instrumentIds"]
+                    ]
+                )
+
+                # 如果所有仪器都已归还，删除记录
+                if len(record["instrumentIds"]) == 0:
+                    records.remove(record)
+                    message = "归还成功，所有仪器已归还"
+                else:
+                    message = "归还成功"
+        else:
+            # 全部归还
+            record["endTime"] = datetime.now(timezone.utc).isoformat()
+            record["returnedBy"] = user.get("username", "未知")
+            record["returnTime"] = datetime.now(timezone.utc).isoformat()
+            message = "归还成功"
 
         save_json(instruments, INSTRUMENTS_FILE)
         save_json(records, RECORDS_FILE)
 
-        return jsonify({"success": True, "message": "归还成功"})
+        return jsonify({"success": True, "message": message})
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})

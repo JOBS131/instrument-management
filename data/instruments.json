@@ -6,11 +6,9 @@
     "brand": "KEYSIGHT",
     "params": "2GHz，8通道",
     "quantity": 2,
-    "available": 1,
+    "available": 2,
     "status": "available",
-    "currentUsers": [
-      "Job"
-    ],
+    "currentUsers": [],
     "location": "测试间"
   },
   {
@@ -20,11 +18,9 @@
     "brand": "KEYSIGHT",
     "params": "1.5GHz，4通道",
     "quantity": 1,
-    "available": 0,
-    "status": "inuse",
-    "currentUsers": [
-      "Job"
-    ],
+    "available": 1,
+    "status": "available",
+    "currentUsers": [],
     "location": "测试间"
   },
   {
