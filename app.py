@@ -83,21 +83,27 @@ def hash_password(password):
 
 
 def get_current_user():
-    """从session获取当前用户"""
-    user_id = session.get("user_id")
+    """从请求头获取当前用户"""
+    # 首先尝试从 headers 获取（前端使用的方式）
+    user_id = request.headers.get("X-User-ID")
+    user_role = request.headers.get("X-User-Role", "guest")
+
+    # 如果没有 headers，尝试从 session 获取（兼容旧方式）
+    if not user_id:
+        user_id = session.get("user_id")
 
     if not user_id:
         return None
 
     _, _, _, users, _ = load_data()
-    user = next((u for u in users if u["id"] == user_id), None)
+    user = next((u for u in users if str(u["id"]) == str(user_id)), None)
 
     if user:
         return {
             "id": user["id"],
             "username": user["username"],
             "name": user["name"],
-            "role": user.get("role", "user"),
+            "role": user.get("role", user_role if user_role != "guest" else "user"),
             "status": user.get("status", "approved"),
         }
     return None
