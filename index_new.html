@@ -338,10 +338,32 @@
             flex: 1;
             text-align: center;
         }
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        .logo-main {
+            margin-bottom: 15px;
+        }
+        .logo-wrapper {
+            text-align: center;
+            margin-bottom: 10px;
+        }
         .logo-img {
             max-width: 100%;
             height: auto;
             max-height: 100px;
+        }
+        .system-title {
+            text-align: center;
+            color: white;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8px 25px;
+            border-radius: 20px;
+            display: inline-block;
         }
         .header-bar {
             display: flex;
@@ -349,6 +371,14 @@
             align-items: center;
             margin-bottom: 15px;
             padding: 10px 0;
+        }
+        .header-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            margin-top: 5px;
         }
         .header-left {
             display: flex;
@@ -617,10 +647,11 @@
                             <th>姓名</th>
                             <th>角色</th>
                             <th>状态</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
                     <tbody id="allUsersTable">
-                        <tr><td colspan="4" class="loading">正在加载...</td></tr>
+                        <tr><td colspan="5" class="loading">正在加载...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -1230,7 +1261,7 @@
             const tbody = document.getElementById('allUsersTable');
             
             if (allUsers.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">暂无用户</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #999;">暂无用户</td></tr>';
                 return;
             }
             
@@ -1243,6 +1274,20 @@
                 } else if (user.status === 'rejected') {
                     statusClass = 'status-rejected';
                     statusText = '已拒绝';
+                } else if (user.status === 'locked') {
+                    statusClass = 'status-rejected';
+                    statusText = '已锁定';
+                }
+                
+                // 管理员账户不显示操作按钮
+                let actionButtons = '-';
+                if (user.role !== 'admin') {
+                    const isLocked = user.status === 'locked';
+                    const lockButton = isLocked 
+                        ? `<button class="btn-approve" onclick="lockUser(${user.id}, 'unlock')" style="margin-right: 5px;">解锁</button>`
+                        : `<button class="btn-reject" onclick="lockUser(${user.id}, 'lock')" style="margin-right: 5px;">锁定</button>`;
+                    const deleteButton = `<button class="btn-reject" onclick="deleteUser(${user.id})">注销</button>`;
+                    actionButtons = lockButton + deleteButton;
                 }
                 
                 return `
@@ -1251,6 +1296,7 @@
                     <td>${user.name}</td>
                     <td>${user.role === 'admin' ? '管理员' : '普通用户'}</td>
                     <td><span class="status-badge-small ${statusClass}">${statusText}</span></td>
+                    <td>${actionButtons}</td>
                 </tr>
             `}).join('');
         }
@@ -1278,6 +1324,65 @@
                 }
             } catch (error) {
                 showMessage('审批失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 锁定/解锁用户
+        async function lockUser(userId, action) {
+            const actionText = action === 'lock' ? '锁定' : '解锁';
+            if (!confirm(`确定要${actionText}该用户账户吗？`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/users/lock`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ userId, action })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    loadAllUsers();
+                } else {
+                    showMessage(data.error || '操作失败', 'error');
+                }
+            } catch (error) {
+                showMessage('操作失败: ' + error.message, 'error');
+            }
+        }
+        
+        // 注销用户
+        async function deleteUser(userId) {
+            if (!confirm('确定要注销该用户账户吗？此操作不可恢复！')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/users/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ userId })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(data.message, 'success');
+                    loadAllUsers();
+                } else {
+                    showMessage(data.error || '注销失败', 'error');
+                }
+            } catch (error) {
+                showMessage('注销失败: ' + error.message, 'error');
             }
         }
         
