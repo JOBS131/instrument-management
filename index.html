@@ -24,12 +24,12 @@
             text-align: center;
             color: white;
             margin-bottom: 30px;
-            font-size: 2.5em;
+            font-size: 2em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         .grid {
             display: grid;
-            grid-template-columns: 450px 1fr;
+            grid-template-columns: 400px 1fr;
             gap: 20px;
         }
         .card {
@@ -59,11 +59,23 @@
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 14px;
-            transition: border-color 0.3s;
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            opacity: 0.9;
         }
         .instrument-list {
             max-height: 300px;
@@ -80,29 +92,14 @@
             background: #f5f5f5;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-        .instrument-item:hover {
-            background: #e8e8e8;
         }
         .instrument-item.selected {
             background: #e3f2fd;
             border: 2px solid #2196f3;
         }
-        .instrument-item.unavailable {
-            opacity: 0.6;
-            background: #ffebee;
-            cursor: not-allowed;
-        }
         .instrument-item input[type="checkbox"] {
             width: auto;
             margin-right: 10px;
-        }
-        .instrument-item input[type="number"] {
-            width: 60px;
-            padding: 5px;
-            margin-left: 10px;
-            text-align: center;
         }
         .qty-selector {
             display: flex;
@@ -110,132 +107,78 @@
             gap: 5px;
             margin-left: 10px;
         }
-        .qty-selector label {
-            font-size: 12px;
-            color: #666;
-        }
-        .instrument-info {
-            flex: 1;
-        }
-        .instrument-name {
-            font-weight: bold;
-            color: #333;
-        }
-        .instrument-model {
-            font-size: 12px;
-            color: #666;
-        }
-        .instrument-location {
-            font-size: 11px;
-            color: #999;
-        }
-        .instrument-quantity {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 13px;
-        }
-        .qty-badge {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .qty-available {
-            background: #4caf50;
-            color: white;
-        }
-        .qty-limited {
-            background: #ff9800;
-            color: white;
-        }
-        .qty-none {
-            background: #f44336;
-            color: white;
-        }
-        .btn-return {
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-            color: white;
-            border: none;
-            padding: 6px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        .btn-return:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
-        }
-        .time-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            width: 100%;
-            margin-top: 10px;
-        }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .stat-item {
+        .qty-selector input {
+            width: 50px;
             text-align: center;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 10px;
-            min-width: 120px;
-        }
-        .stat-number {
-            font-size: 2em;
-            font-weight: bold;
-        }
-        .stat-label {
-            font-size: 0.9em;
-            opacity: 0.9;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 14px;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #e0e0e0;
         }
         th {
             background: #f5f5f5;
             font-weight: bold;
-            color: #333;
         }
-        tr:hover {
-            background: #f9f9f9;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
         }
-        .full-width {
-            grid-column: 1 / -1;
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: white;
+        }
+        .status-available {
+            background: #4caf50;
+        }
+        .status-limited {
+            background: #ff9800;
+        }
+        .status-inuse {
+            background: #f44336;
+        }
+        .btn-return {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .tab.active {
+            background: #667eea;
+            color: white;
         }
         .message {
             padding: 15px;
@@ -255,323 +198,87 @@
             border: 1px solid #f44336;
             display: block;
         }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-available {
-            background: #4caf50;
-            color: white;
-        }
-        .status-limited {
-            background: #ff9800;
-            color: white;
-        }
-        .status-inuse {
-            background: #f44336;
-            color: white;
-        }
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .tab {
-            padding: 10px 20px;
-            background: #f5f5f5;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            width: auto;
-            margin: 0;
-        }
-        .tab.active {
-            background: #667eea;
-            color: white;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .loading {
-            text-align: center;
-            padding: 20px;
-            color: #999;
-        }
-        .import-section {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .import-section h3 {
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .import-section p {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        /* 登录页面样式 */
-        .login-container {
-            max-width: 400px;
-            margin: 50px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-        .login-container h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-        }
-        .login-tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        .login-tab {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 16px;
-            color: #666;
-        }
-        .login-tab.active {
-            color: #667eea;
-            border-bottom: 2px solid #667eea;
-            margin-bottom: -2px;
-        }
-        .login-form {
-            display: none;
-        }
-        .login-form.active {
-            display: block;
-        }
-        /* 用户信息栏 */
-        .user-bar {
-            background: rgba(255,255,255,0.2);
-            padding: 15px 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-        }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .user-role {
-            background: #4caf50;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-        .user-role.admin {
-            background: #f44336;
-        }
-        .logout-btn {
-            background: rgba(255,255,255,0.3);
-            border: 1px solid white;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.4);
-        }
-        /* 审批管理样式 */
-        .approval-section {
-            margin-top: 20px;
-        }
-        .approval-item {
-            background: #f5f5f5;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border-left: 4px solid #ff9800;
-        }
-        .approval-item.approved {
-            border-left-color: #4caf50;
-        }
-        .approval-item.rejected {
-            border-left-color: #f44336;
-        }
-        .approval-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        .approval-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .approval-status.pending {
-            background: #ff9800;
-            color: white;
-        }
-        .approval-status.approved {
-            background: #4caf50;
-            color: white;
-        }
-        .approval-status.rejected {
-            background: #f44336;
-            color: white;
-        }
-        .approval-actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 10px;
-        }
-        .btn-approve {
-            background: #4caf50;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .btn-reject {
-            background: #f44336;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        .hidden {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
-    <!-- 登录页面 -->
-    <div id="loginPage" class="container">
-        <h1>🏢 澳大河套集成电路研究院<br>🔬 测试间仪器设备管理系统</h1>
-        
-        <div class="login-container">
-            <h2>用户登录</h2>
-            
-            <div class="login-tabs">
-                <button class="login-tab active" onclick="switchLoginTab('login')">登录</button>
-                <button class="login-tab" onclick="switchLoginTab('register')">注册</button>
-            </div>
-            
-            <div id="loginForm" class="login-form active">
-                <div class="form-group">
-                    <label>用户名</label>
-                    <input type="text" id="loginUsername" placeholder="请输入用户名">
-                </div>
-                <div class="form-group">
-                    <label>密码</label>
-                    <input type="password" id="loginPassword" placeholder="请输入密码">
-                </div>
-                <button type="button" onclick="handleLogin()" style="width: 100%;">登录</button>
-                <p style="margin-top: 15px; font-size: 13px; color: #666; text-align: center;">
-                    默认管理员账号: admin / admin123
-                </p>
-            </div>
-            
-            <div id="registerForm" class="login-form">
-                <div class="form-group">
-                    <label>用户名</label>
-                    <input type="text" id="regUsername" placeholder="请输入用户名">
-                </div>
-                <div class="form-group">
-                    <label>姓名</label>
-                    <input type="text" id="regName" placeholder="请输入真实姓名">
-                </div>
-                <div class="form-group">
-                    <label>密码</label>
-                    <input type="password" id="regPassword" placeholder="请输入密码">
-                </div>
-                <button type="button" onclick="handleRegister()" style="width: 100%;">注册</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 主页面 -->
-    <div id="mainPage" class="container hidden">
-        <!-- 用户信息栏 -->
-        <div class="user-bar">
-            <div class="user-info">
-                <span id="userDisplayName">欢迎，用户</span>
-                <span id="userRole" class="user-role">普通用户</span>
-            </div>
-            <button class="logout-btn" onclick="handleLogout()">退出登录</button>
-        </div>
-        
+    <div class="container">
         <h1>🏢 澳大河套集成电路研究院<br>🔬 测试间仪器设备管理系统</h1>
         
         <div id="message" class="message"></div>
         
-        <!-- 审批管理区域（仅管理员可见） -->
-        <div id="approvalSection" class="card hidden" style="margin-bottom: 20px;">
-            <h2>📋 借用审批管理</h2>
-            <div id="approvalList" class="approval-section">
-                <div class="loading">正在加载申请列表...</div>
-            </div>
-        </div>
-        
         <div class="grid">
-            <!-- 仪器使用登记 -->
             <div class="card">
                 <h2>📝 仪器使用登记</h2>
                 
                 <form id="registrationForm">
                     <div class="form-group">
-                        <label for="userName">姓名 *</label>
-                        <input type="text" id="userName" name="userName" required placeholder="请输入您的姓名">
+                        <label>姓名 *</label>
+                        <input type="text" id="userName" required placeholder="请输入您的姓名">
                     </div>
                     
                     <div class="form-group">
-                        <label>选择仪器 * <span style="font-weight: normal; color: #999;">(显示可用数量/总数量)</span></label>
+                        <label>部门/项目组 *</label>
+                        <input type="text" id="userDept" required placeholder="请输入部门或项目组">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>联系方式 *</label>
+                        <input type="text" id="userContact" required placeholder="手机号或邮箱">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>选择仪器 *</label>
                         <div class="instrument-list" id="instrumentList">
-                            <div class="loading">正在加载仪器列表...</div>
+                            <div style="text-align:center;padding:20px;color:#999;">正在加载...</div>
                         </div>
                     </div>
                     
-                    <button type="submit">提交登记</button>
+                    <div class="form-group">
+                        <label>预计使用时间</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="font-weight: normal; font-size: 12px;">开始时间</label>
+                                <input type="datetime-local" id="startTime" required>
+                            </div>
+                            <div>
+                                <label style="font-weight: normal; font-size: 12px;">结束时间</label>
+                                <input type="datetime-local" id="endTime" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>使用目的 *</label>
+                        <textarea id="purpose" rows="3" required placeholder="请描述使用仪器的目的"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>备注</label>
+                        <textarea id="notes" rows="2" placeholder="其他需要说明的事项"></textarea>
+                    </div>
+                    
+                    <button type="submit">提交申请</button>
                 </form>
             </div>
             
-            <!-- 右侧内容 -->
             <div>
-                <!-- 统计卡片 -->
                 <div class="card" style="margin-bottom: 20px;">
-                    <h2>📊 仪器状态总览</h2>
-                    <div class="stats">
-                        <div class="stat-item">
+                    <div class="stats-grid">
+                        <div class="stat-box">
                             <div class="stat-number" id="totalCount">0</div>
-                            <div class="stat-label">仪器总数</div>
+                            <div>仪器总数</div>
                         </div>
-                        <div class="stat-item">
+                        <div class="stat-box">
                             <div class="stat-number" id="availableCount">0</div>
-                            <div class="stat-label">可用数量</div>
+                            <div>可用数量</div>
                         </div>
-                        <div class="stat-item">
+                        <div class="stat-box">
                             <div class="stat-number" id="inUseCount">0</div>
-                            <div class="stat-label">使用中</div>
+                            <div>使用中</div>
                         </div>
                     </div>
                     
+                    <h3 style="margin-bottom: 15px;">📊 仪器状态总览</h3>
                     <table>
                         <thead>
                             <tr>
@@ -584,19 +291,18 @@
                             </tr>
                         </thead>
                         <tbody id="instrumentTable">
-                            <tr><td colspan="6" class="loading">正在加载...</td></tr>
+                            <tr><td colspan="6" style="text-align:center;padding:20px;">正在加载...</td></tr>
                         </tbody>
                     </table>
                 </div>
                 
-                <!-- 使用记录 -->
                 <div class="card">
                     <div class="tabs">
                         <button class="tab active" onclick="switchTab('current')">📋 当前使用</button>
                         <button class="tab" onclick="switchTab('history')">📚 历史记录</button>
                     </div>
                     
-                    <div id="currentTab" class="tab-content active">
+                    <div id="currentTab">
                         <table>
                             <thead>
                                 <tr>
@@ -607,12 +313,12 @@
                                 </tr>
                             </thead>
                             <tbody id="recordsTable">
-                                <tr><td colspan="4" class="loading">正在加载...</td></tr>
+                                <tr><td colspan="4" style="text-align:center;padding:20px;">正在加载...</td></tr>
                             </tbody>
                         </table>
                     </div>
                     
-                    <div id="historyTab" class="tab-content">
+                    <div id="historyTab" style="display: none;">
                         <table>
                             <thead>
                                 <tr>
@@ -622,7 +328,7 @@
                                 </tr>
                             </thead>
                             <tbody id="historyTable">
-                                <tr><td colspan="3" class="loading">正在加载...</td></tr>
+                                <tr><td colspan="3" style="text-align:center;padding:20px;">正在加载...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -632,64 +338,63 @@
     </div>
 
     <script>
-        // API基础URL
         const API_BASE = window.location.origin;
-        
-        // 数据存储
         let instruments = [];
         let records = [];
         let historyRecords = [];
         
-        // 页面加载时初始化
         window.addEventListener('load', function() {
             loadData();
             
-            // 每分钟刷新数据
-            setInterval(loadData, 60000);
+            // 设置默认时间
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('startTime').value = now.toISOString().slice(0, 16);
+            
+            const later = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+            document.getElementById('endTime').value = later.toISOString().slice(0, 16);
         });
         
-        // 添加页面可见性检测，页面重新可见时刷新数据
-        document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
-                loadData();
-            }
-        });
-        
-        // 加载数据
         async function loadData() {
             try {
-                // 加载仪器列表
-                const instResponse = await fetch(`${API_BASE}/api/instruments`);
+                const [instResponse, recResponse, histResponse, statsResponse] = await Promise.all([
+                    fetch(`${API_BASE}/api/instruments`),
+                    fetch(`${API_BASE}/api/records`),
+                    fetch(`${API_BASE}/api/history`),
+                    fetch(`${API_BASE}/api/stats`)
+                ]);
+                
                 const instData = await instResponse.json();
+                const recData = await recResponse.json();
+                const histData = await histResponse.json();
+                const statsData = await statsResponse.json();
+                
                 if (instData.success) {
                     instruments = instData.data;
                     updateInstrumentList();
                     updateInstrumentTable();
-                    updateStats();
                 }
                 
-                // 加载当前记录
-                const recResponse = await fetch(`${API_BASE}/api/records`);
-                const recData = await recResponse.json();
                 if (recData.success) {
                     records = recData.data;
                     updateRecordsTable();
                 }
                 
-                // 加载历史记录
-                const histResponse = await fetch(`${API_BASE}/api/history`);
-                const histData = await histResponse.json();
                 if (histData.success) {
                     historyRecords = histData.data;
                     updateHistoryTable();
                 }
+                
+                if (statsData.success) {
+                    document.getElementById('totalCount').textContent = statsData.data.total;
+                    document.getElementById('availableCount').textContent = statsData.data.available;
+                    document.getElementById('inUseCount').textContent = statsData.data.inUse;
+                }
             } catch (error) {
-                console.error('加载数据失败:', error);
-                showMessage('连接服务器失败，请确保服务器已启动 (python3 server.py)', 'error');
+                showMessage('加载数据失败', 'error');
             }
         }
         
-        // 更新仪器选择列表
         function updateInstrumentList() {
             const container = document.getElementById('instrumentList');
             container.innerHTML = '';
@@ -702,69 +407,38 @@
                 const isAvailable = available > 0;
                 
                 if (!isAvailable) {
-                    div.classList.add('unavailable');
+                    div.style.opacity = '0.6';
+                    div.style.background = '#ffebee';
                 }
                 
-                let qtyClass = 'qty-available';
-                if (available === 0) qtyClass = 'qty-none';
-                else if (available < inst.quantity * 0.3) qtyClass = 'qty-limited';
-                
-                const maxQty = isAvailable ? available : 0;
                 div.innerHTML = `
-                    <input type="checkbox" id="inst_${inst.id}" name="instruments" value="${inst.id}" 
-                        ${!isAvailable ? 'disabled' : ''} onchange="toggleInstrument(this)">
-                    <div class="instrument-info">
-                        <div class="instrument-name">${inst.name}</div>
-                        <div class="instrument-model">型号: ${inst.model || 'N/A'}</div>
-                        <div class="instrument-location">位置: ${inst.location || 'N/A'}</div>
+                    <input type="checkbox" id="inst_${inst.id}" value="${inst.id}" ${!isAvailable ? 'disabled' : ''} onchange="toggleInstrument(this)">
+                    <div style="flex: 1;">
+                        <div style="font-weight: bold;">${inst.name}</div>
+                        <div style="font-size: 12px; color: #666;">型号: ${inst.model || 'N/A'}</div>
+                        <div style="font-size: 12px; color: #666;">位置: ${inst.location || 'N/A'}</div>
                     </div>
                     <div class="qty-selector">
-                        <label>数量:</label>
-                        <input type="number" id="qty_${inst.id}" name="qty_${inst.id}" 
-                            min="1" max="${maxQty}" value="1" 
-                            ${!isAvailable ? 'disabled' : ''}
-                            onchange="validateQuantity(${inst.id}, ${maxQty})">
+                        <label style="font-size: 12px;">数量:</label>
+                        <input type="number" id="qty_${inst.id}" min="1" max="${available}" value="1" ${!isAvailable ? 'disabled' : ''}>
                     </div>
-                    <div class="instrument-quantity">
-                        <span class="qty-badge ${qtyClass}">${available}/${inst.quantity}</span>
+                    <div style="margin-left: 10px;">
+                        <span style="background: ${available > 0 ? '#4caf50' : '#f44336'}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px;">${available}/${inst.quantity}</span>
                     </div>
                 `;
                 container.appendChild(div);
             });
         }
         
-        // 切换仪器选择
         function toggleInstrument(checkbox) {
             const item = checkbox.closest('.instrument-item');
-            const instId = checkbox.value;
-            const qtyInput = document.getElementById(`qty_${instId}`);
-
             if (checkbox.checked) {
                 item.classList.add('selected');
-                if (qtyInput) qtyInput.disabled = false;
             } else {
                 item.classList.remove('selected');
-                if (qtyInput) {
-                    qtyInput.disabled = true;
-                    qtyInput.value = 1;
-                }
             }
         }
-
-        // 验证数量输入
-        function validateQuantity(instId, maxQty) {
-            const qtyInput = document.getElementById(`qty_${instId}`);
-            let value = parseInt(qtyInput.value);
-
-            if (value < 1) {
-                qtyInput.value = 1;
-            } else if (value > maxQty) {
-                qtyInput.value = maxQty;
-                showMessage(`仪器数量不能超过可用数量 ${maxQty} 台`, 'error');
-            }
-        }
-
-        // 更新仪器状态表
+        
         function updateInstrumentTable() {
             const tbody = document.getElementById('instrumentTable');
             tbody.innerHTML = '';
@@ -773,8 +447,8 @@
                 const row = document.createElement('tr');
                 const available = inst.available !== undefined ? inst.available : inst.quantity;
                 
-                let statusClass = '';
-                let statusText = '';
+                let statusClass = 'status-available';
+                let statusText = '充足';
                 
                 if (available === 0) {
                     statusClass = 'status-inuse';
@@ -782,9 +456,6 @@
                 } else if (available < inst.quantity * 0.3) {
                     statusClass = 'status-limited';
                     statusText = '紧张';
-                } else {
-                    statusClass = 'status-available';
-                    statusText = '充足';
                 }
                 
                 const currentUsers = inst.currentUsers && inst.currentUsers.length > 0 
@@ -803,27 +474,15 @@
             });
         }
         
-        // 更新统计
-        function updateStats() {
-            const total = instruments.reduce((sum, i) => sum + i.quantity, 0);
-            const available = instruments.reduce((sum, i) => sum + (i.available !== undefined ? i.available : i.quantity), 0);
-            const inUse = total - available;
-            
-            document.getElementById('totalCount').textContent = total;
-            document.getElementById('availableCount').textContent = available;
-            document.getElementById('inUseCount').textContent = inUse;
-        }
-        
-        // 更新当前记录表
         function updateRecordsTable() {
             const tbody = document.getElementById('recordsTable');
             tbody.innerHTML = '';
             
             if (records.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">暂无进行中的使用记录</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999; padding: 20px;">暂无进行中的使用记录</td></tr>';
                 return;
             }
-
+            
             records.slice().reverse().forEach(record => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -836,13 +495,12 @@
             });
         }
         
-        // 更新历史记录表
         function updateHistoryTable() {
             const tbody = document.getElementById('historyTable');
             tbody.innerHTML = '';
             
             if (historyRecords.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">暂无历史记录</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999; padding: 20px;">暂无历史记录</td></tr>';
                 return;
             }
             
@@ -857,49 +515,6 @@
             });
         }
         
-        // 切换标签页
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-
-            if (tab === 'current') {
-                document.querySelectorAll('.tab')[0].classList.add('active');
-                document.getElementById('currentTab').classList.add('active');
-            } else {
-                document.querySelectorAll('.tab')[1].classList.add('active');
-                document.getElementById('historyTab').classList.add('active');
-            }
-        }
-
-        // 归还仪器
-        async function returnInstrument(recordId) {
-            if (!confirm('确定要归还这些仪器吗？')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_BASE}/api/release`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ recordId: recordId })
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showMessage('仪器归还成功！', 'success');
-                    loadData();
-                } else {
-                    showMessage('归还失败: ' + result.error, 'error');
-                }
-            } catch (error) {
-                showMessage('归还失败: ' + error.message, 'error');
-            }
-        }
-
-        // 格式化日期时间
         function formatDateTime(dateStr) {
             if (!dateStr) return '-';
             const date = new Date(dateStr);
@@ -911,7 +526,20 @@
             });
         }
         
-        // 显示消息
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'current') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('currentTab').style.display = 'block';
+                document.getElementById('historyTab').style.display = 'none';
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('currentTab').style.display = 'none';
+                document.getElementById('historyTab').style.display = 'block';
+            }
+        }
+        
         function showMessage(text, type) {
             const msgDiv = document.getElementById('message');
             msgDiv.textContent = text;
@@ -921,14 +549,35 @@
             }, 5000);
         }
         
-        // 表单提交处理
+        async function returnInstrument(recordId) {
+            if (!confirm('确定要归还这些仪器吗？')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/return`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recordId: recordId })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('仪器归还成功！', 'success');
+                    loadData();
+                } else {
+                    showMessage('归还失败: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('归还失败，请检查网络连接', 'error');
+            }
+        }
+        
         document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // 获取选中的仪器及数量
             const selectedInstruments = [];
             const instrumentQuantities = {};
-            const checkboxes = document.querySelectorAll('input[name="instruments"]:checked');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
             
             if (checkboxes.length === 0) {
                 showMessage('请至少选择一台仪器！', 'error');
@@ -939,59 +588,51 @@
                 const instId = parseInt(cb.value);
                 selectedInstruments.push(instId);
                 
-                // 获取数量
                 const qtyInput = document.getElementById(`qty_${instId}`);
                 const qty = qtyInput ? parseInt(qtyInput.value) || 1 : 1;
                 instrumentQuantities[instId] = qty;
             });
             
-            // 获取仪器名称（包含数量）
             const instrumentNames = selectedInstruments.map(id => {
                 const inst = instruments.find(i => i.id === id);
                 const qty = instrumentQuantities[id];
                 return inst ? `${inst.name}(${inst.model}) x${qty}台` : '';
             }).join(', ');
             
-            // 创建记录数据（简化版）
-            const now = new Date();
-            const later = new Date(now.getTime() + 8 * 60 * 60 * 1000); // 默认使用8小时
-            
             const recordData = {
                 userName: document.getElementById('userName').value,
-                userDept: '-',
-                userContact: '-',
+                userDept: document.getElementById('userDept').value,
+                userContact: document.getElementById('userContact').value,
                 instrumentIds: selectedInstruments,
                 instrumentNames: instrumentNames,
                 instrumentQuantities: instrumentQuantities,
-                startTime: now.toISOString(),
-                endTime: later.toISOString(),
-                purpose: '-',
-                notes: ''
+                startTime: new Date(document.getElementById('startTime').value).toISOString(),
+                endTime: new Date(document.getElementById('endTime').value).toISOString(),
+                purpose: document.getElementById('purpose').value,
+                notes: document.getElementById('notes').value
             };
             
             try {
-                const response = await fetch(`${API_BASE}/api/register`, {
+                const response = await fetch(`${API_BASE}/api/borrow/apply`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(recordData)
                 });
                 
                 const result = await response.json();
                 
                 if (result.success) {
-                    showMessage('登记成功！仪器已为您预留。', 'success');
+                    showMessage('申请已提交，等待管理员审批', 'success');
                     this.reset();
                     document.querySelectorAll('.instrument-item').forEach(item => {
                         item.classList.remove('selected');
                     });
                     loadData();
                 } else {
-                    showMessage('登记失败: ' + result.error, 'error');
+                    showMessage('申请失败: ' + result.error, 'error');
                 }
             } catch (error) {
-                showMessage('提交失败，请检查服务器连接', 'error');
+                showMessage('提交失败，请检查网络连接', 'error');
             }
         });
     </script>
