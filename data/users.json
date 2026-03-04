@@ -25,5 +25,14 @@
     "role": "user",
     "created_at": "2026-03-04T11:50:14.079116+00:00",
     "status": "approved"
+  },
+  {
+    "id": 1772626887870,
+    "username": "test_pending",
+    "password_hash": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3",
+    "name": "测试待审批用户",
+    "role": "user",
+    "status": "pending",
+    "created_at": "2026-03-04T12:21:27.870603+00:00"
   }
 ]
