@@ -151,6 +151,12 @@ def login_page():
     return send_from_directory(".", "login.html")
 
 
+@app.route("/logo.png")
+def logo():
+    """Logo图片"""
+    return send_from_directory(".", "澳大河套集成电路研究院.png")
+
+
 @app.route("/index_new.html")
 def main_page():
     """仪器管理主页面 - 需要登录"""
@@ -209,6 +215,9 @@ def login():
 
     if user.get("status") == "rejected":
         return jsonify({"success": False, "error": "账号已被拒绝，请联系管理员"})
+
+    if user.get("status") == "locked":
+        return jsonify({"success": False, "error": "账号已被锁定，请联系管理员解锁"})
 
     # 设置session
     session["user_id"] = user["id"]
@@ -732,6 +741,73 @@ def review_user():
         save_json(users, USERS_FILE)
 
         return jsonify({"success": True, "message": message})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+
+
+@app.route("/api/admin/users/lock", methods=["POST"])
+@require_admin
+def lock_user():
+    """锁定/解锁用户账户（仅管理员）"""
+    try:
+        data = request.get_json()
+        user_id = data.get("userId")
+        action = data.get("action")  # 'lock' 或 'unlock'
+
+        if not user_id or action not in ["lock", "unlock"]:
+            return jsonify({"success": False, "error": "参数错误"})
+
+        _, _, _, users, _ = load_data()
+
+        user = next((u for u in users if u["id"] == user_id), None)
+        if not user:
+            return jsonify({"success": False, "error": "用户不存在"})
+
+        if user.get("role") == "admin":
+            return jsonify({"success": False, "error": "不能锁定管理员账户"})
+
+        if action == "lock":
+            user["status"] = "locked"
+            message = "用户账户已锁定"
+        else:
+            user["status"] = "approved"
+            message = "用户账户已解锁"
+
+        save_json(users, USERS_FILE)
+
+        return jsonify({"success": True, "message": message})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
+
+
+@app.route("/api/admin/users/delete", methods=["POST"])
+@require_admin
+def delete_user():
+    """注销/删除用户账户（仅管理员）"""
+    try:
+        data = request.get_json()
+        user_id = data.get("userId")
+
+        if not user_id:
+            return jsonify({"success": False, "error": "参数错误"})
+
+        _, _, _, users, _ = load_data()
+
+        user = next((u for u in users if u["id"] == user_id), None)
+        if not user:
+            return jsonify({"success": False, "error": "用户不存在"})
+
+        if user.get("role") == "admin":
+            return jsonify({"success": False, "error": "不能注销管理员账户"})
+
+        # 从列表中移除用户
+        users.remove(user)
+
+        save_json(users, USERS_FILE)
+
+        return jsonify({"success": True, "message": "用户账户已注销"})
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})
