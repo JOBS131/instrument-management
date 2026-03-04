@@ -2,29 +2,30 @@
 # -*- coding: utf-8 -*-
 """
 仪器设备管理系统 - Flask版本（带用户认证和审批）
+使用Token认证替代Session
 """
 
 import json
 import hashlib
-import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from functools import wraps
-from flask import Flask, request, jsonify, send_from_directory, session
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder=".")
-app.secret_key = "your-secret-key-change-in-production"
 
-# Session configuration for production
-app.config.update(
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_SAMESITE='None',
-    SESSION_COOKIE_HTTPONLY=True,
-    PERMANENT_SESSION_LIFETIME=timedelta(days=7)
+# CORS配置 - 允许所有来源
+CORS(
+    app,
+    resources={
+        r"/api/*": {
+            "origins": "*",
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Content-Type", "X-User-ID", "X-User-Role"],
+        }
+    },
 )
-
-CORS(app, supports_credentials=True, origins=["https://instrument-management.onrender.com", "http://localhost:8081"])
 
 # 数据存储路径
 BASE_DIR = Path(__file__).parent
@@ -80,13 +81,44 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 
+def get_current_user():
+    """从请求头获取当前用户"""
+    user_id = request.headers.get("X-User-ID")
+    user_role = request.headers.get("X-User-Role", "guest")
+
+    if not user_id:
+        return None
+
+    _, _, _, users, _ = load_data()
+    user = next((u for u in users if str(u["id"]) == str(user_id)), None)
+
+    if user:
+        return {
+            "id": user["id"],
+            "username": user["username"],
+            "name": user["name"],
+            "role": user.get("role", "user"),
+            "status": user.get("status", "approved"),
+        }
+    return None
+
+
 def require_auth(f):
     """需要登录的装饰器"""
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if "user_id" not in session:
+        user = get_current_user()
+        if not user:
             return jsonify({"success": False, "error": "请先登录"}), 401
+        if user.get("status") == "pending":
+            return jsonify(
+                {"success": False, "error": "账号正在审批中，请等待管理员审核"}
+            ), 403
+        if user.get("status") == "rejected":
+            return jsonify(
+                {"success": False, "error": "账号已被拒绝，请联系管理员"}
+            ), 403
         return f(*args, **kwargs)
 
     return decorated_function
@@ -97,12 +129,10 @@ def require_admin(f):
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if "user_id" not in session:
+        user = get_current_user()
+        if not user:
             return jsonify({"success": False, "error": "请先登录"}), 401
-
-        _, _, _, users, _ = load_data()
-        user = next((u for u in users if u["id"] == session["user_id"]), None)
-        if not user or user.get("role") != "admin":
+        if user.get("role") != "admin":
             return jsonify({"success": False, "error": "需要管理员权限"}), 403
         return f(*args, **kwargs)
 
@@ -111,21 +141,7 @@ def require_admin(f):
 
 @app.route("/")
 def index():
-    return send_from_directory(".", "login.html")
-
-
-@app.route("/login.html")
-def login_page():
-    return send_from_directory(".", "login.html")
-
-
-@app.route("/index_new.html")
-def main_page():
-    return send_from_directory(".", "index_new.html")
-
-
-@app.route("/index.html")
-def old_index():
+    """主页"""
     return send_from_directory(".", "index.html")
 
 
@@ -157,16 +173,11 @@ def login():
     if not user:
         return jsonify({"success": False, "error": "用户名或密码错误"})
 
-    # 检查用户状态
-    user_status = user.get("status", "approved")
-    if user_status == "pending":
+    if user.get("status") == "pending":
         return jsonify({"success": False, "error": "账号正在审批中，请等待管理员审核"})
-    elif user_status == "rejected":
-        return jsonify({"success": False, "error": "账号已被拒绝，请联系管理员"})
 
-    session["user_id"] = user["id"]
-    session["username"] = user["username"]
-    session["role"] = user.get("role", "user")
+    if user.get("status") == "rejected":
+        return jsonify({"success": False, "error": "账号已被拒绝，请联系管理员"})
 
     return jsonify(
         {
@@ -183,35 +194,19 @@ def login():
 
 @app.route("/api/auth/logout", methods=["POST"])
 def logout():
-    """用户登出"""
-    session.clear()
+    """用户登出（前端清除localStorage即可）"""
     return jsonify({"success": True})
 
 
 @app.route("/api/auth/me", methods=["GET"])
-def get_current_user():
+def get_current_user_info():
     """获取当前登录用户"""
-    if "user_id" not in session:
-        return jsonify({"success": False, "error": "未登录"})
-
-    _, _, _, users, _ = load_data()
-    user = next((u for u in users if u["id"] == session["user_id"]), None)
+    user = get_current_user()
 
     if not user:
-        session.clear()
-        return jsonify({"success": False, "error": "用户不存在"})
+        return jsonify({"success": False, "error": "未登录"})
 
-    return jsonify(
-        {
-            "success": True,
-            "data": {
-                "id": user["id"],
-                "username": user["username"],
-                "name": user["name"],
-                "role": user.get("role", "user"),
-            },
-        }
-    )
+    return jsonify({"success": True, "data": user})
 
 
 @app.route("/api/auth/register", methods=["POST"])
@@ -283,8 +278,13 @@ def apply_borrow():
     """提交借用申请"""
     try:
         data = request.get_json()
-        user_id = session["user_id"]
-        username = session["username"]
+        user = get_current_user()
+
+        if not user:
+            return jsonify({"success": False, "error": "请先登录"})
+
+        user_id = user["id"]
+        username = user["username"]
 
         instruments, _, _, _, pending = load_data()
 
@@ -322,7 +322,7 @@ def apply_borrow():
             "instrumentQuantities": quantities,
             "startTime": data["startTime"],
             "endTime": data["endTime"],
-            "purpose": data["purpose"],
+            "purpose": data.get("purpose", ""),
             "notes": data.get("notes", ""),
             "status": "pending",
             "applyTime": datetime.now(timezone.utc).isoformat(),
@@ -352,8 +352,13 @@ def apply_borrow():
 def get_pending_applications():
     """获取待审批列表"""
     _, _, _, _, pending = load_data()
-    role = session.get("role", "user")
-    user_id = session["user_id"]
+    user = get_current_user()
+
+    if not user:
+        return jsonify({"success": False, "error": "请先登录"})
+
+    role = user.get("role", "user")
+    user_id = user["id"]
 
     if role == "admin":
         # 管理员看所有待审批
@@ -387,8 +392,9 @@ def review_application():
         if application["status"] != "pending":
             return jsonify({"success": False, "error": "该申请已处理"})
 
-        reviewer_id = session["user_id"]
-        reviewer_name = session.get("username", "管理员")
+        reviewer = get_current_user()
+        reviewer_id = reviewer["id"]
+        reviewer_name = reviewer.get("username", "管理员")
 
         if action == "approve":
             # 批准申请
@@ -471,9 +477,10 @@ def get_records():
     now = datetime.now(timezone.utc)
 
     # 检查是否登录
-    is_logged_in = "user_id" in session
-    role = session.get("role", "user") if is_logged_in else "guest"
-    user_id = session.get("user_id") if is_logged_in else None
+    user = get_current_user()
+    is_logged_in = user is not None
+    role = user.get("role", "guest") if user else "guest"
+    user_id = user.get("id") if user else None
 
     active_records = []
     for r in records:
@@ -487,7 +494,6 @@ def get_records():
                 end_time = end_time.replace(tzinfo=timezone.utc) - timedelta(hours=8)
 
             if end_time > now:
-                # 未登录用户只能看概览，登录用户看自己的，管理员看所有
                 if role == "admin":
                     active_records.append(r)
                 elif is_logged_in and r.get("userId") == user_id:
@@ -512,17 +518,16 @@ def get_history():
     """获取历史记录（公开访问）"""
     _, _, history, _, _ = load_data()
 
-    # 检查是否登录
-    is_logged_in = "user_id" in session
-    role = session.get("role", "user") if is_logged_in else "guest"
-    user_id = session.get("user_id") if is_logged_in else None
+    user = get_current_user()
+    is_logged_in = user is not None
+    role = user.get("role", "guest") if user else "guest"
+    user_id = user.get("id") if user else None
 
     if role == "admin":
         filtered_history = history[-100:]
     elif is_logged_in:
         filtered_history = [h for h in history if h.get("userId") == user_id][-100:]
     else:
-        # 未登录用户看到简化的历史记录
         filtered_history = [
             {
                 "id": h["id"],
@@ -546,8 +551,13 @@ def return_instruments():
     try:
         data = request.get_json()
         record_id = data.get("recordId")
-        user_id = session["user_id"]
-        role = session.get("role", "user")
+
+        user = get_current_user()
+        if not user:
+            return jsonify({"success": False, "error": "请先登录"})
+
+        user_id = user["id"]
+        role = user.get("role", "user")
 
         if not record_id:
             return jsonify({"success": False, "error": "缺少记录ID"})
@@ -584,7 +594,7 @@ def return_instruments():
                             inst["currentUsers"].remove(record["userName"])
 
         record["endTime"] = datetime.now(timezone.utc).isoformat()
-        record["returnedBy"] = session.get("username", "未知")
+        record["returnedBy"] = user.get("username", "未知")
         record["returnTime"] = datetime.now(timezone.utc).isoformat()
 
         save_json(instruments, INSTRUMENTS_FILE)

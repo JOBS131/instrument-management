@@ -596,6 +596,33 @@
 
     <script>
         const API_BASE = window.location.origin;
+        
+        // 用户认证辅助函数
+        function getAuthHeaders() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            return {
+                'Content-Type': 'application/json',
+                'X-User-ID': user.id || '',
+                'X-User-Role': user.role || ''
+            };
+        }
+        
+        function saveUser(user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            currentUser = user;
+        }
+        
+        function clearUser() {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+        }
+        
+        function loadUser() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            currentUser = user;
+            return user;
+        }
+        
         let instruments = [];
         let records = [];
         let currentUser = null;
@@ -617,19 +644,11 @@
 
         // 检查登录状态
         async function checkLoginStatus() {
-            try {
-                const response = await fetch(`${API_BASE}/api/auth/me`, {
-                    credentials: 'include'
-                });
-                const result = await response.json();
-                
-                if (result.success) {
-                    currentUser = result.data;
-                    updateUIForLoggedInUser();
-                } else {
-                    updateUIForGuest();
-                }
-            } catch (error) {
+            const user = loadUser();
+            if (user) {
+                currentUser = user;
+                updateUIForLoggedInUser();
+            } else {
                 updateUIForGuest();
             }
         }
@@ -970,7 +989,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/borrow/apply`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     credentials: 'include',
                     body: JSON.stringify(recordData)
                 });
@@ -1005,7 +1024,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/return`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     credentials: 'include',
                     body: JSON.stringify({ recordId: recordId })
                 });
@@ -1051,7 +1070,7 @@
             
             try {
                 const response = await fetch(`${API_BASE}/api/borrow/pending`, {
-                    credentials: 'include'
+                    headers: getAuthHeaders()
                 });
                 const result = await response.json();
                 
@@ -1081,7 +1100,7 @@
             
             try {
                 const response = await fetch(`${API_BASE}/api/borrow/pending`, {
-                    credentials: 'include'
+                    headers: getAuthHeaders()
                 });
                 const result = await response.json();
                 
@@ -1202,7 +1221,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/borrow/review`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     credentials: 'include',
                     body: JSON.stringify({ applicationId: appId, action: 'approve' })
                 });
@@ -1232,7 +1251,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/borrow/review`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     credentials: 'include',
                     body: JSON.stringify({ applicationId: appId, action: 'reject', reason: reason })
                 });
@@ -1257,7 +1276,7 @@
             
             try {
                 const response = await fetch(`${API_BASE}/api/admin/users/pending`, {
-                    credentials: 'include'
+                    headers: getAuthHeaders()
                 });
                 const result = await response.json();
                 
@@ -1320,7 +1339,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/admin/users/review`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     credentials: 'include',
                     body: JSON.stringify({ userId: userId, action: 'approve' })
                 });
@@ -1345,7 +1364,7 @@
             try {
                 const response = await fetch(`${API_BASE}/api/admin/users/review`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     credentials: 'include',
                     body: JSON.stringify({ userId: userId, action: 'reject' })
                 });
