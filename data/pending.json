@@ -26,5 +26,33 @@
     "reviewerId": 1,
     "reviewerName": "admin",
     "rejectReason": null
+  },
+  {
+    "id": 1772676276205,
+    "userId": 1772637256048,
+    "userName": "1",
+    "userDept": "-",
+    "userContact": "-",
+    "instrumentIds": [
+      1,
+      2,
+      3
+    ],
+    "instrumentNames": "示波器(EXR208A) x1台, 示波器(DSOX4154A) x1台, 示波器(UXR0104B) x1台",
+    "instrumentQuantities": {
+      "1": 1,
+      "2": 1,
+      "3": 1
+    },
+    "startTime": "2026-03-05T02:04:36.196Z",
+    "endTime": "2026-03-05T10:04:36.196Z",
+    "purpose": "-",
+    "notes": "",
+    "status": "approved",
+    "applyTime": "2026-03-05T02:04:36.205198+00:00",
+    "reviewTime": "2026-03-05T02:05:14.480410+00:00",
+    "reviewerId": 1,
+    "reviewerName": "admin",
+    "rejectReason": null
   }
 ]

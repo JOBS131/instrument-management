@@ -1,1 +1,29 @@
-[]
+[
+  {
+    "id": 1772676276205,
+    "registerTime": "2026-03-05T02:05:14.478351+00:00",
+    "userId": 1772637256048,
+    "userName": "1",
+    "userDept": "-",
+    "userContact": "-",
+    "instrumentIds": [
+      1,
+      2,
+      3
+    ],
+    "instrumentNames": "示波器(EXR208A) x1台, 示波器(DSOX4154A) x1台, 示波器(UXR0104B) x1台",
+    "instrumentQuantities": {
+      "1": 1,
+      "2": 1,
+      "3": 1
+    },
+    "startTime": "2026-03-05T02:04:36.196Z",
+    "endTime": "2026-03-05T02:05:22.105741+00:00",
+    "purpose": "-",
+    "notes": "账户被锁定，系统自动归还",
+    "approvedBy": "admin",
+    "approvedTime": "2026-03-05T02:05:14.478360+00:00",
+    "returnedBy": "system",
+    "returnTime": "2026-03-05T02:05:22.105776+00:00"
+  }
+]
