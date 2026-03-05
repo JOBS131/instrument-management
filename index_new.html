@@ -514,11 +514,6 @@
                 
                 <form id="registrationForm">
                     <div class="form-group">
-                        <label for="userName">姓名 *</label>
-                        <input type="text" id="userName" name="userName" required placeholder="请输入您的姓名">
-                    </div>
-                    
-                    <div class="form-group">
                         <label>选择仪器 * <span style="font-weight: normal; color: #999;">(显示可用数量/总数量)</span></label>
                         <div class="instrument-list" id="instrumentList">
                             <div class="loading">正在加载仪器列表...</div>
@@ -1039,7 +1034,6 @@
             const later = new Date(now.getTime() + 8 * 60 * 60 * 1000); // 默认使用8小时
             
             const recordData = {
-                userName: document.getElementById('userName').value,
                 userDept: '-',
                 userContact: '-',
                 instrumentIds: selectedInstruments,

@@ -337,6 +337,7 @@ def apply_borrow():
 
         user_id = user["id"]
         username = user["username"]
+        real_name = user.get("name", username)  # 使用真实姓名
 
         instruments, _, _, _, pending = load_data()
 
@@ -366,7 +367,7 @@ def apply_borrow():
         application = {
             "id": int(datetime.now(timezone.utc).timestamp() * 1000),
             "userId": user_id,
-            "userName": username,
+            "userName": real_name,  # 使用真实姓名而不是用户名
             "userDept": data.get("userDept", ""),
             "userContact": data.get("userContact", ""),
             "instrumentIds": data["instrumentIds"],
@@ -764,7 +765,7 @@ def lock_user():
         if not user_id or action not in ["lock", "unlock"]:
             return jsonify({"success": False, "error": "参数错误"})
 
-        _, _, _, users, _ = load_data()
+        instruments, records, _, users, _ = load_data()
 
         user = next((u for u in users if u["id"] == user_id), None)
         if not user:
@@ -773,9 +774,44 @@ def lock_user():
         if user.get("role") == "admin":
             return jsonify({"success": False, "error": "不能锁定管理员账户"})
 
+        username = user["username"]
+
         if action == "lock":
             user["status"] = "locked"
             message = "用户账户已锁定"
+
+            # 自动释放该用户借用的所有仪器
+            released_count = 0
+            user_records = [r for r in records if r.get("userName") == username]
+            for record in user_records:
+                quantities = record.get("instrumentQuantities", {})
+                for inst_id in record["instrumentIds"]:
+                    inst = next((i for i in instruments if i["id"] == inst_id), None)
+                    if inst:
+                        return_qty = quantities.get(str(inst_id), 1)
+                        inst["available"] = min(
+                            inst.get("available", 0) + return_qty, inst["quantity"]
+                        )
+                        if inst["available"] >= inst["quantity"]:
+                            inst["status"] = "available"
+
+                        # 从当前使用者列表中移除
+                        if username in inst.get("currentUsers", []):
+                            for _ in range(return_qty):
+                                if username in inst["currentUsers"]:
+                                    inst["currentUsers"].remove(username)
+
+                # 标记记录为已归还（系统强制归还）
+                record["endTime"] = datetime.now(timezone.utc).isoformat()
+                record["returnedBy"] = "system"
+                record["returnTime"] = datetime.now(timezone.utc).isoformat()
+                record["notes"] = "账户被锁定，系统自动归还"
+                released_count += 1
+
+            if released_count > 0:
+                save_json(instruments, INSTRUMENTS_FILE)
+                save_json(records, RECORDS_FILE)
+                message += f"，已自动归还 {released_count} 条借用记录"
         else:
             user["status"] = "approved"
             message = "用户账户已解锁"
@@ -799,7 +835,7 @@ def delete_user():
         if not user_id:
             return jsonify({"success": False, "error": "参数错误"})
 
-        _, _, _, users, _ = load_data()
+        instruments, records, _, users, _ = load_data()
 
         user = next((u for u in users if u["id"] == user_id), None)
         if not user:
@@ -808,12 +844,50 @@ def delete_user():
         if user.get("role") == "admin":
             return jsonify({"success": False, "error": "不能注销管理员账户"})
 
+        username = user["username"]
+
+        # 自动释放该用户借用的所有仪器
+        released_count = 0
+        user_records = [r for r in records if r.get("userName") == username]
+        for record in user_records:
+            quantities = record.get("instrumentQuantities", {})
+            for inst_id in record["instrumentIds"]:
+                inst = next((i for i in instruments if i["id"] == inst_id), None)
+                if inst:
+                    return_qty = quantities.get(str(inst_id), 1)
+                    inst["available"] = min(
+                        inst.get("available", 0) + return_qty, inst["quantity"]
+                    )
+                    if inst["available"] >= inst["quantity"]:
+                        inst["status"] = "available"
+
+                    # 从当前使用者列表中移除
+                    if username in inst.get("currentUsers", []):
+                        for _ in range(return_qty):
+                            if username in inst["currentUsers"]:
+                                inst["currentUsers"].remove(username)
+
+            # 标记记录为已归还（系统强制归还）
+            record["endTime"] = datetime.now(timezone.utc).isoformat()
+            record["returnedBy"] = "system"
+            record["returnTime"] = datetime.now(timezone.utc).isoformat()
+            record["notes"] = "账户被注销，系统自动归还"
+            released_count += 1
+
+        if released_count > 0:
+            save_json(instruments, INSTRUMENTS_FILE)
+            save_json(records, RECORDS_FILE)
+
         # 从列表中移除用户
         users.remove(user)
 
         save_json(users, USERS_FILE)
 
-        return jsonify({"success": True, "message": "用户账户已注销"})
+        message = "用户账户已注销"
+        if released_count > 0:
+            message += f"，已自动归还 {released_count} 条借用记录"
+
+        return jsonify({"success": True, "message": message})
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)})

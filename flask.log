@@ -8,22 +8,15 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 117-981-632
-127.0.0.1 - - [04/Mar/2026 22:43:20] "[36mGET /index_new.html HTTP/1.1[0m" 304 -
-127.0.0.1 - - [04/Mar/2026 22:43:20] "[36mGET /logo.png HTTP/1.1[0m" 304 -
-127.0.0.1 - - [04/Mar/2026 22:43:20] "GET /api/instruments HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:43:20] "GET /api/auth/me HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:43:20] "GET /api/admin/users/pending HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:43:20] "GET /api/records HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:43:20] "GET /api/admin/users HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:43:20] "GET /api/borrow/pending HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:43:20] "GET /api/history HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:44:20] "GET /api/instruments HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:44:20] "GET /api/records HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:44:20] "GET /api/history HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:44:39] "POST /api/admin/users/lock HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:44:40] "GET /api/admin/users HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:44:42] "POST /api/admin/users/delete HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:44:43] "GET /api/admin/users HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:45:25] "GET /api/instruments HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:45:25] "GET /api/records HTTP/1.1" 200 -
-127.0.0.1 - - [04/Mar/2026 22:45:25] "GET /api/history HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:56:50] "GET /api/instruments HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:56:51] "GET /api/records HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:56:51] "GET /api/history HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:56:58] "GET /index_new.html HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:56:58] "[36mGET /logo.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [05/Mar/2026 09:56:58] "GET /api/instruments HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:56:58] "GET /api/auth/me HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:56:58] "GET /api/records HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:56:58] "GET /api/history HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:57:05] "POST /api/auth/logout HTTP/1.1" 200 -
+127.0.0.1 - - [05/Mar/2026 09:57:05] "[36mGET /login.html HTTP/1.1[0m" 304 -
+127.0.0.1 - - [05/Mar/2026 09:57:05] "[36mGET /logo.png HTTP/1.1[0m" 304 -
